@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NP Heritage Trail</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --np-orange: #ff6b00;
+            --np-blue: #004d99;
+            --glass: rgba(0, 15, 35, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: radial-gradient(circle at top, #002b5c 0%, #000b1a 100%);
+            color: white; margin: 0; padding: 0;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; overflow: hidden;
+        }
+
+        .app {
+            width: 100%; max-width: 400px; height: 92vh; 
+            display: flex; flex-direction: column;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(10px); 
+            border-radius: 30px; border: 1px solid var(--glass-border); 
+            position: relative; overflow: hidden;
+        }
+
+        header { padding: 15px; text-align: center; flex-shrink: 0; z-index: 10; position: relative; }
+
+        .audio-toggle {
+            position: absolute; right: 15px; top: 15px;
+            background: var(--np-orange); border: none; color: white;
+            width: 35px; height: 35px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            z-index: 100; font-size: 16px;
+        }
+
+        .score-display {
+            position: absolute; left: 15px; top: 15px; font-weight: 800;
+            background: var(--np-orange); color: #fff;
+            padding: 5px 12px; border-radius: 20px; font-size: 11px;
+        }
+
+        .crest-container {
+            width: 50px; height: 50px; margin: 0 auto 5px; background: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            border: 2px solid var(--np-orange);
+            overflow: hidden;
+        }
+        
+        .crest-container img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        .screen { 
+            display: none; flex-direction: column; flex: 1; 
+            padding: 0 15px 15px; overflow-y: auto; align-items: center; 
+        }
+        .screen.active { display: flex; animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { 
+            background: var(--glass); padding: 18px; border-radius: 22px; 
+            border: 1px solid var(--glass-border); text-align: center; 
+            width: 100%; margin-bottom: 8px; 
+        }
+
+        .topic-label { 
+            font-size: 10px; font-weight: 800; color: var(--np-orange); 
+            text-transform: uppercase; margin: 8px 0 4px; 
+        }
+        
+        .char-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin-bottom: 8px; }
+        
+        .char-card { 
+            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); 
+            border-radius: 15px; padding: 10px 5px; cursor: pointer; transition: 0.2s; 
+            display: flex; flex-direction: column; align-items: center;
+            position: relative;
+        }
+        .char-card:hover { border-color: var(--np-orange); background: rgba(255,107,0,0.1); transform: scale(1.05); }
+        .char-card:active { transform: scale(0.98); }
+        .char-card span:first-child { font-size: 30px; pointer-events: none; }
+        .char-card b { font-size: 12px; color: white; margin-top: 3px; pointer-events: none; }
+        
+        .tag { 
+            font-size: 7px; padding: 2px 5px; border-radius: 4px; 
+            font-weight: 800; margin-top: 5px; text-transform: uppercase;
+            pointer-events: none;
+        }
+        .tag-walk { background: #00ff88; color: #000; }
+        .tag-digi { background: #00d4ff; color: #000; }
+
+        .media-box { 
+            width: 100%; border-radius: 12px; overflow: hidden; 
+            margin-bottom: 12px; background: #000; border: 1px solid #00d4ff; 
+            height: 150px; display: none; 
+        }
+        .media-box img, .media-box iframe { width: 100%; height: 100%; object-fit: cover; border: none; }
+
+        .loc-box { 
+            background: rgba(0, 255, 136, 0.1); border: 1px dashed #00ff88; 
+            border-radius: 12px; padding: 10px; margin-bottom: 12px; 
+            text-align: left; display: none; 
+        }
+        .loc-box b { color: #00ff88; font-size: 10px; text-transform: uppercase; display: block; }
+        .loc-box p { margin: 0; font-size: 12px; color: #fff; line-height: 1.3; }
+
+        .quote-box { 
+            font-style: italic; color: #ffccaa; border-left: 3px solid var(--np-orange); 
+            padding: 10px; margin: 10px 0; text-align: left; 
+            background: rgba(255,255,255,0.05); border-radius: 0 12px 12px 0; 
+            font-size: 12px; 
+        }
+        
+        .btn-action { 
+            background: var(--np-orange); color: white; border: none; 
+            padding: 15px; border-radius: 12px; width: 100%; font-weight: 800; 
+            cursor: pointer; text-transform: uppercase; font-family: 'Outfit'; 
+            margin-top: 5px; font-size: 14px;
+        }
+        .btn-action:hover { opacity: 0.9; }
+
+        .option-btn { 
+            background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); 
+            color: white; padding: 12px; border-radius: 10px; text-align: left; 
+            cursor: pointer; width: 100%; margin-bottom: 8px; 
+            font-family: 'Outfit'; font-size: 14px; transition: 0.2s;
+        }
+        .option-btn:hover:not(:disabled) { background: rgba(255,255,255,0.15); }
+        .option-btn.correct { background: #00c853 !important; font-weight: 800; }
+        .option-btn.wrong { background: #d32f2f !important; opacity: 0.6; }
+        .option-btn:disabled { cursor: not-allowed; }
+
+        .map-bar { display: flex; justify-content: center; gap: 10px; padding-bottom: 10px; }
+        .map-bar.hidden { display: none; }
+        .node { width: 8px; height: 8px; border-radius: 50%; background: #333; transition: 0.3s; }
+        .node.active { background: var(--np-orange); box-shadow: 0 0 8px var(--np-orange); }
+        .node.done { background: #00ff88; }
+
+        #transition-overlay { 
+            position: absolute; inset: 0; background: var(--np-blue); 
+            z-index: 2000; display: none; flex-direction: column; 
+            align-items: center; justify-content: center; 
+        }
+        #transition-overlay.active { display: flex; }
+        
+        .walking-container { position: relative; width: 100%; height: 60px; }
+        .adventurer { 
+            position: absolute; bottom: 0; left: -50px; font-size: 35px; 
+            animation: walkAni 2.5s linear infinite; 
+        }
+        @keyframes walkAni { 0% { left: -50px; } 100% { left: 110%; } }
+
+        input[type="text"] {
+            width: 100%; padding: 15px; border-radius: 10px; 
+            border: 1px solid var(--glass-border); margin-bottom: 10px;
+            background: rgba(255,255,255,0.1); color: white;
+            font-family: 'Outfit'; font-size: 14px;
+        }
+        input[type="text"]::placeholder { color: rgba(255,255,255,0.5); }
+        
+        .list-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .list-container h4 {
+            margin: 0 0 12px 0;
+            color: var(--np-orange);
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .list-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .list-item.current-user {
+            background: rgba(255,107,0,0.15);
+            border: 1px solid var(--np-orange);
+        }
+        
+        .list-item .rank {
+            width: 30px;
+            font-weight: 800;
+            color: var(--np-orange);
+        }
+        
+        .list-item .medal {
+            font-size: 18px;
+        }
+        
+        .list-item .name {
+            flex: 1;
+            text-align: left;
+            padding: 0 10px;
+        }
+        
+        .list-item .score {
+            font-weight: 800;
+            color: #00ff88;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgm" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
+    <audio id="sfx-ding"><source src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" type="audio/mpeg"></audio>
+
+    <div id="transition-overlay">
+        <h2 style="font-weight:800; margin:0;">ON THE MOVE...</h2>
+        <div class="walking-container"><div id="walking-char" class="adventurer">🦁</div></div>
+    </div>
+
+    <div class="app">
+        <header>
+            <div class="score-display" id="header-score">PTS: 0</div>
+            <button class="audio-toggle" id="mute-btn">🔊</button>
+            <div class="crest-container">
+                <img src="channels4_profile.jpg" alt="NP Logo">
+            </div>
+            <h1 style="margin:0; font-size: 16px; letter-spacing: 1px;">MEMORY TRAIL</h1>
+        </header>
+
+        <div class="map-bar hidden" id="map-bar">
+            <div class="node" id="n0"></div>
+            <div class="node" id="n1"></div>
+            <div class="node" id="n2"></div>
+        </div>
+
+        <div id="screen-start" class="screen active">
+            <div class="card">
+                <h2 style="margin-top:0;">WELCOME</h2>
+                <input type="text" id="username-input" placeholder="Enter Your Name">
+                <button class="btn-action" id="start-btn">START JOURNEY</button>
+            </div>
+        </div>
+
+        <div id="screen-character" class="screen">
+            <div class="card">
+                <h3 style="margin:0;">CHOOSE YOUR GUIDE</h3>
+                
+                <div class="topic-label">1. NP History</div>
+                <div class="char-grid">
+                    <div class="char-card" data-char="leo" data-icon="🦁" data-mode="walking">
+                        <span>🦁</span><b>Leo</b><span class="tag tag-walk">Walking Trail</span>
+                    </div>
+                    <div class="char-card" data-char="sage" data-icon="🦉" data-mode="digital">
+                        <span>🦉</span><b>Sage</b><span class="tag tag-digi">Digital Trail</span>
+                    </div>
+                </div>
+                
+                <div class="topic-label">2. NP Founders</div>
+                <div class="char-grid">
+                    <div class="char-card" data-char="ollie" data-icon="🦦" data-mode="walking">
+                        <span>🦦</span><b>Ollie</b><span class="tag tag-walk">Walking Trail</span>
+                    </div>
+                    <div class="char-card" data-char="felix" data-icon="🐱" data-mode="digital">
+                        <span>🐱</span><b>Felix</b><span class="tag tag-digi">Digital Trail</span>
+                    </div>
+                </div>
+                
+                <div class="topic-label">3. Famous Alumni</div>
+                <div class="char-grid">
+                    <div class="char-card" data-char="momo" data-icon="🐒" data-mode="walking">
+                        <span>🐒</span><b>Momo</b><span class="tag tag-walk">Walking Trail</span>
+                    </div>
+                    <div class="char-card" data-char="sparky" data-icon="🐿️" data-mode="digital">
+                        <span>🐿️</span><b>Sparky</b><span class="tag tag-digi">Digital Trail</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-clue" class="screen">
+            <div class="card">
+                <h3 id="clue-title" style="color:var(--np-orange); margin:0 0 10px 0; font-size:16px;"></h3>
+                <div id="clue-media" class="media-box"></div>
+                <div id="location-hint" class="loc-box">
+                    <b>📍 Location Clue</b>
+                    <p id="location-text"></p>
+                </div>
+                <div id="clue-quote" class="quote-box"></div>
+                <button class="btn-action" id="ready-btn">I'M READY!</button>
+            </div>
+        </div>
+
+        <div id="screen-quiz" class="screen">
+            <div class="card">
+                <div id="attempts-display" style="color:#ffaa00; font-weight:800; margin-bottom:10px; font-size:12px;"></div>
+                <p id="quiz-question" style="font-weight: 600; margin:0 0 15px 0; font-size:14px;"></p>
+                <div id="quiz-options"></div>
+            </div>
+        </div>
+
+        <div id="screen-finish" class="screen">
+            <div class="card">
+                <h2 style="margin:0 0 15px 0;">🎉 JOURNEY COMPLETE!</h2>
+                <div style="text-align:left; background:rgba(0,0,0,0.3); padding:15px; border-radius:12px; font-size:12px; margin: 10px 0;">
+                    <p style="margin:5px 0;">Walking Trail: <b id="res-walking" style="color:#00ff88">0</b> pts</p>
+                    <p style="margin:5px 0;">Digital Trail: <b id="res-digital" style="color:#00d4ff">0</b> pts</p>
+                    <p style="font-weight:800; border-top:1px solid #444; margin-top:10px; padding-top:10px; margin-bottom:0;">
+                        Total Score: <b id="res-total" style="color:var(--np-orange)">0 pts</b>
+                    </p>
+                </div>
+                
+                <div style="background:rgba(255,107,0,0.1); border:1px solid var(--np-orange); border-radius:12px; padding:15px; margin:15px 0; text-align:left;">
+                    <h4 style="margin:0 0 10px 0; color:var(--np-orange); font-size:13px;">💡 The next chapter belongs to you. What will it be?</h4>
+                    <textarea 
+                        id="feedback-text" 
+                        placeholder="Share your vision for NP's future, your experience today, or ideas to make this better..."
+                        style="width:100%; min-height:80px; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:rgba(0,0,0,0.3); color:white; font-family:'Outfit'; font-size:12px; resize:vertical;"
+                    ></textarea>
+                    
+                    <button class="btn-action" style="padding:10px; font-size:12px; margin-top:8px;" id="submit-feedback-btn">SUBMIT FEEDBACK</button>
+                    <div id="feedback-status" style="margin-top:8px; font-size:11px; text-align:center; display:none;"></div>
+                </div>
+                
+                <button class="btn-action" style="background:#444; padding:10px; font-size:12px; margin-bottom:10px;" id="view-feedback-btn">🌟 VIEW COMMUNITY WALL</button>
+
+                <div class="list-container" id="leaderboard-container">
+                    <h4>🏆 Leaderboard - Top 10</h4>
+                    <div id="leaderboard-list"></div>
+                </div>
+                
+                <button id="switch-btn" class="btn-action"></button>
+                <button class="btn-action" style="background:#333; margin-top:5px;" id="restart-btn">START NEW JOURNEY</button>
+            </div>
+        </div>
+
+        <div id="screen-feedback" class="screen">
+            <div class="card">
+                <h2 style="margin:0 0 15px 0;">🌟 Community Wall</h2>
+                <div id="feedback-list"></div>
+                <button class="btn-action" style="background:#444; margin-top:15px;" id="back-to-finish">BACK TO RESULTS</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const state = {
+            userName: "",
+            currentMode: "",
+            currentChar: "",
+            currentStage: 0,
+            attemptsLeft: 3,
+            isMuted: false,
+            quizAnswered: false
+        };
+
+        const audio = {
+            bgm: document.getElementById('bgm'),
+            sfx: document.getElementById('sfx-ding')
+        };
+
+        const storyData = {
+            leo: [
+                { title: "NP History - Stage 1", question: "Where did classes first begin?", options: ["Tank Road", "Clementi Road", "Orchard", "Jurong"], answer: "Tank Road", exp: "Leo", icon: "🦁", fact: "NP was founded at Tank Road in 1963, a humble beginning for our great institution.", loc: "Find the Founding Plaque near Block 1 Main Entrance!" },
+                { title: "NP History - Stage 2", question: "When did NP move to Clementi campus?", options: ["1998", "2000", "2005", "1995"], answer: "1998", exp: "Leo", icon: "🦁", fact: "In 1998, NP moved to our current Clementi campus, expanding our facilities and capabilities.", loc: "Visit the Campus Model at Block 1 Level 1 to see the layout!" },
+                { title: "NP History - Stage 3", question: "What does NP stand for?", options: ["Ngee Ann Polytechnic", "National Polytechnic", "New Polytechnic", "North Polytechnic"], answer: "Ngee Ann Polytechnic", exp: "Leo", icon: "🦁", fact: "Ngee Ann means 'Best of Righteousness' in Teochew, reflecting our values and heritage.", loc: "Check out the Heritage Corner at Block 83 to learn more about our name!" }
+            ],
+            sage: [
+                { title: "NP History - Stage 1", question: "Where did classes first begin?", options: ["Tank Road", "Clementi Road", "Orchard", "Jurong"], answer: "Tank Road", exp: "Sage", icon: "🦉", fact: "Historical archives show our first campus was at Tank Road, where it all began.", media: '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' },
+                { title: "NP History - Stage 2", question: "When did NP move to Clementi campus?", options: ["1998", "2000", "2005", "1995"], answer: "1998", exp: "Sage", icon: "🦉", fact: "The move to Clementi in 1998 marked a new era of growth and innovation for NP.", media: '<iframe src="https://www.youtube.com/embed/jNQXAC9IVRw" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' },
+                { title: "NP History - Stage 3", question: "What does 'Ngee Ann' mean?", options: ["Best of Righteousness", "New Achievement", "Great Learning", "Noble Ambition"], answer: "Best of Righteousness", exp: "Sage", icon: "🦉", fact: "Our name 'Ngee Ann' reflects the Teochew values of righteousness and moral excellence.", media: '<iframe src="https://www.youtube.com/embed/9bZkp7q19f0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' }
+            ],
+            ollie: [
+                { title: "NP Founders - Stage 1", question: "Who founded Ngee Ann Polytechnic?", options: ["Ngee Ann Kongsi", "Government", "Teachers Association", "British Council"], answer: "Ngee Ann Kongsi", exp: "Ollie", icon: "🦦", fact: "The Ngee Ann Kongsi, a Teochew clan association, founded NP in 1963 to provide quality education and preserve cultural heritage.", loc: "Visit the Library Level 4 Heritage Wall to learn more about our founding!" },
+                { title: "NP Founders - Stage 2", question: "What community does Ngee Ann Kongsi represent?", options: ["Teochew", "Hokkien", "Cantonese", "Hakka"], answer: "Teochew", exp: "Ollie", icon: "🦦", fact: "Ngee Ann Kongsi represents the Teochew community and has been serving education since 1845.", loc: "Explore the Teochew Heritage exhibit at Block 1 Level 2!" },
+                { title: "NP Founders - Stage 3", question: "What was the main goal of founding NP?", options: ["Quality education for all", "Make money", "Build buildings", "Create jobs"], answer: "Quality education for all", exp: "Ollie", icon: "🦦", fact: "NP was founded with the mission to provide accessible, quality technical education to Singapore's youth.", loc: "Read the Mission Statement plaque at the Main Entrance!" }
+            ],
+            felix: [
+                { title: "NP Founders - Stage 1", question: "What year was Ngee Ann Polytechnic founded?", options: ["1963", "1965", "1960", "1970"], answer: "1963", exp: "Felix", icon: "🐱", fact: "Ngee Ann Kongsi established NP in 1963 to provide quality education and preserve Teochew heritage through learning.", media: '<iframe src="https://www.youtube.com/embed/2e_3UKU1esw" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' },
+                { title: "NP Founders - Stage 2", question: "When was Ngee Ann Kongsi established?", options: ["1845", "1900", "1920", "1800"], answer: "1845", exp: "Felix", icon: "🐱", fact: "Ngee Ann Kongsi was established in 1845, making it one of Singapore's oldest community organizations.", media: '<iframe src="https://www.youtube.com/embed/QH2-TGUlwu4" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' },
+                { title: "NP Founders - Stage 3", question: "How many polytechnics were there when NP was founded?", options: ["2", "1", "3", "5"], answer: "2", exp: "Felix", icon: "🐱", fact: "NP was Singapore's second polytechnic, following Singapore Polytechnic founded in 1954.", media: '<iframe src="https://www.youtube.com/embed/3JZ_D3ELwOQ" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' }
+            ],
+            momo: [
+                { title: "Famous Alumni - Stage 1", question: "Who is a famous film director from NP?", options: ["Anthony Chen", "Jack Neo", "Christopher Nolan", "Jack Cheng"], answer: "Anthony Chen", exp: "Momo", icon: "🐒", fact: "Anthony Chen graduated from NP's Film, Sound & Video programme and won the prestigious Camera d'Or at Cannes Film Festival in 2013 for his debut feature 'Ilo Ilo'!", loc: "Check out the Alumni Success Wall at Block 52 to see more inspiring NP graduates!" },
+                { title: "Famous Alumni - Stage 2", question: "Which NP school did Anthony Chen graduate from?", options: ["Film & Media Studies", "Business", "Engineering", "Design"], answer: "Film & Media Studies", exp: "Momo", icon: "🐒", fact: "The School of Film & Media Studies has produced many award-winning filmmakers and media professionals.", loc: "Visit the Media Studios at Block 51 to see where the magic happens!" },
+                { title: "Famous Alumni - Stage 3", question: "NP alumni work in diverse fields including:", options: ["All industries", "Only tech", "Only media", "Only business"], answer: "All industries", exp: "Momo", icon: "🐒", fact: "NP alumni excel across all sectors - from arts and healthcare to engineering and entrepreneurship!", loc: "Browse the Alumni Achievement Gallery at Block 1 Level 3!" }
+            ],
+            sparky: [
+                { title: "Famous Alumni - Stage 1", question: "Which award did Anthony Chen win at Cannes?", options: ["Camera d'Or", "Palme d'Or", "Best Director", "Grand Prix"], answer: "Camera d'Or", exp: "Sparky", icon: "🐿️", fact: "Anthony Chen, NP Film graduate, made history winning the Camera d'Or at Cannes! Other notable NP alumni include entrepreneurs, artists, and industry leaders across various fields.", media: '<iframe src="https://www.youtube.com/embed/L_jWHffIx5E" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' },
+                { title: "Famous Alumni - Stage 2", question: "What is the title of Anthony Chen's award-winning film?", options: ["Ilo Ilo", "Wonder Boy", "Wet Season", "Singapore Dreaming"], answer: "Ilo Ilo", exp: "Sparky", icon: "🐿️", fact: "'Ilo Ilo' tells a touching story about a Filipino maid and a Singaporean family during the 1997 Asian Financial Crisis.", media: '<iframe src="https://www.youtube.com/embed/sEbKSYLA0_k" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' },
+                { title: "Famous Alumni - Stage 3", question: "What year did Anthony Chen win at Cannes?", options: ["2013", "2010", "2015", "2012"], answer: "2013", exp: "Sparky", icon: "🐿️", fact: "The 2013 Camera d'Or win put Singapore cinema on the global map and inspired many young filmmakers!", media: '<iframe src="https://www.youtube.com/embed/BaW_jenozKc" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' }
+            ]
+        };
+
+        const storage = {
+            getUserKey: () => `np_u_${state.userName.toLowerCase()}`,
+            getUserData: () => {
+                try {
+                    const data = localStorage.getItem(storage.getUserKey());
+                    return data ? JSON.parse(data) : {};
+                } catch (e) {
+                    console.error('Error reading user data:', e);
+                    return {};
+                }
+            },
+            saveUserData: (data) => {
+                try {
+                    localStorage.setItem(storage.getUserKey(), JSON.stringify(data));
+                    return true;
+                } catch (e) {
+                    console.error('Error saving user data:', e);
+                    return false;
+                }
+            },
+            saveScore: (points) => {
+                const data = storage.getUserData();
+                const charKey = state.currentChar;
+                if (!data[charKey]) data[charKey] = {};
+                const currentScore = data[charKey][state.currentStage] || 0;
+                if (points > currentScore) {
+                    data[charKey][state.currentStage] = points;
+                    storage.saveUserData(data);
+                }
+            },
+            getTotalScore: () => {
+                const data = storage.getUserData();
+                let total = 0;
+                Object.keys(data).forEach(charKey => {
+                    if (typeof data[charKey] === 'object') {
+                        Object.values(data[charKey]).forEach(score => total += score);
+                    }
+                });
+                return { total };
+            },
+            getAllUsers: () => {
+                const users = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('np_u_')) {
+                        try {
+                            const userName = key.replace('np_u_', '');
+                            const data = JSON.parse(localStorage.getItem(key));
+                            let total = 0;
+                            Object.keys(data).forEach(charKey => {
+                                if (typeof data[charKey] === 'object') {
+                                    Object.values(data[charKey]).forEach(score => total += score);
+                                }
+                            });
+                            users.push({ name: userName, total: total });
+                        } catch (e) {
+                            console.error('Error parsing user data:', e);
+                        }
+                    }
+                }
+                return users.sort((a, b) => b.total - a.total);
+            }
+        };
+
+        function navigate(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(screenId);
+            if (target) target.classList.add('active');
+        }
+
+        function toggleMute() {
+            state.isMuted = !state.isMuted;
+            audio.bgm.muted = state.isMuted;
+            document.getElementById('mute-btn').innerText = state.isMuted ? "🔇" : "🔊";
+        }
+
+        function enterApp() {
+            const input = document.getElementById('username-input').value.trim();
+            if (!input) {
+                alert("Please enter your name to begin!");
+                return;
+            }
+            state.userName = input;
+            navigate('screen-character');
+        }
+
+        function selectChar(name, icon, mode) {
+            document.getElementById('walking-char').innerText = icon;
+            state.currentMode = mode;
+            state.currentChar = name;
+            state.currentStage = 0;
+            audio.bgm.play().catch(e => console.log('Audio autoplay prevented:', e));
+            updateHeaderScore();
+            showClue();
+        }
+
+        function startOppositeMode() {
+            const counterparts = { leo: 'sage', sage: 'leo', ollie: 'felix', felix: 'ollie', momo: 'sparky', sparky: 'momo' };
+            const icons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
+            const newChar = counterparts[state.currentChar];
+            state.currentChar = newChar;
+            state.currentMode = state.currentMode === 'walking' ? 'digital' : 'walking';
+            state.currentStage = 0;
+            document.getElementById('walking-char').innerText = icons[newChar];
+            showClue();
+        }
+
+        function showClue() {
+            document.getElementById('map-bar').classList.remove('hidden');
+            const data = storyData[state.currentChar][state.currentStage];
+            if (!data) {
+                console.error('No data found for', state.currentChar, state.currentStage);
+                return;
+            }
+            document.getElementById('clue-title').innerText = data.title;
+            const mediaBox = document.getElementById('clue-media');
+            const locationBox = document.getElementById('location-hint');
+            if (state.currentMode === 'walking') {
+                mediaBox.style.display = "none";
+                locationBox.style.display = "block";
+                document.getElementById('location-text').innerText = data.loc;
+            } else {
+                locationBox.style.display = "none";
+                if (data.media) {
+                    mediaBox.innerHTML = data.media;
+                    mediaBox.style.display = "block";
+                } else {
+                    mediaBox.style.display = "none";
+                }
+            }
+            document.getElementById('clue-quote').innerText = `${data.icon} ${data.exp}: "${data.fact}"`;
+            updateNodes();
+            navigate('screen-clue');
+        }
+
+        function showQuiz() {
+            state.attemptsLeft = 3;
+            state.quizAnswered = false;
+            updateAttempts();
+            const data = storyData[state.currentChar][state.currentStage];
+            document.getElementById('quiz-question').innerText = data.question;
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = "";
+            data.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = "option-btn";
+                button.innerText = option;
+                button.onclick = () => checkAnswer(option, button, data.answer);
+                optionsContainer.appendChild(button);
+            });
+            navigate('screen-quiz');
+        }
+
+        function checkAnswer(choice, button, correctAnswer) {
+            if (state.quizAnswered) return;
+            if (choice === correctAnswer) {
+                state.quizAnswered = true;
+                button.classList.add('correct');
+                document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+                confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+                if (!state.isMuted) audio.sfx.play().catch(e => console.log('SFX play failed:', e));
+                const baseScore = state.currentMode === 'walking' ? 100 : 50;
+                let points;
+                if (state.attemptsLeft === 3) points = baseScore;
+                else if (state.attemptsLeft === 2) points = Math.floor(baseScore / 2);
+                else points = Math.floor(baseScore / 4);
+                storage.saveScore(points);
+                updateHeaderScore();
+                setTimeout(runTransition, 1200);
+            } else {
+                button.classList.add('wrong');
+                button.disabled = true;
+                state.attemptsLeft--;
+                updateAttempts();
+                if (state.attemptsLeft <= 0) {
+                    state.quizAnswered = true;
+                    document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+                    setTimeout(runTransition, 1500);
+                }
+            }
+        }
+
+        function runTransition() {
+            const overlay = document.getElementById('transition-overlay');
+            overlay.classList.add('active');
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                const totalStages = storyData[state.currentChar].length;
+                if (state.currentStage < totalStages - 1) {
+                    state.currentStage++;
+                    showClue();
+                } else {
+                    finishGame();
+                }
+            }, 2500);
+        }
+
+        function updateLeaderboard() {
+            const leaderboardList = document.getElementById('leaderboard-list');
+            const users = storage.getAllUsers();
+            if (users.length === 0) {
+                leaderboardList.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">No players yet. Be the first!</div>';
+                return;
+            }
+            const top10 = users.slice(0, 10);
+            leaderboardList.innerHTML = top10.map((user, index) => {
+                const rank = index + 1;
+                let medal = '';
+                if (rank === 1) medal = '<span class="medal">🥇</span>';
+                else if (rank === 2) medal = '<span class="medal">🥈</span>';
+                else if (rank === 3) medal = '<span class="medal">🥉</span>';
+                const isCurrentUser = user.name.toLowerCase() === state.userName.toLowerCase();
+                const highlightClass = isCurrentUser ? 'current-user' : '';
+                return `<div class="list-item ${highlightClass}"><span class="rank">${medal || rank}</span><span class="name">${user.name}${isCurrentUser ? ' (You)' : ''}</span><span class="score">${user.total}</span></div>`;
+            }).join('');
+        }
+
+        function submitFeedback() {
+            const feedbackText = document.getElementById('feedback-text').value.trim();
+            const statusDiv = document.getElementById('feedback-status');
+            if (!feedbackText) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.color = '#ff4444';
+                statusDiv.innerText = '⚠️ Please enter your feedback first';
+                return;
+            }
+            const feedbackKey = 'np_feedback';
+            const feedbacks = JSON.parse(localStorage.getItem(feedbackKey) || '[]');
+            const feedbackData = {
+                user: state.userName,
+                feedback: feedbackText,
+                score: storage.getTotalScore().total,
+                character: state.currentChar,
+                mode: state.currentMode,
+                timestamp: new Date().toISOString()
+            };
+            feedbacks.push(feedbackData);
+            try {
+                localStorage.setItem(feedbackKey, JSON.stringify(feedbacks));
+                statusDiv.style.display = 'block';
+                statusDiv.style.color = '#00ff88';
+                statusDiv.innerText = '✅ Thank you! Your feedback has been saved.';
+                document.getElementById('feedback-text').value = '';
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+            } catch (e) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.color = '#ff4444';
+                statusDiv.innerText = '❌ Error saving feedback. Please try again.';
+                console.error('Feedback save error:', e);
+            }
+        }
+
+        function viewAllFeedback() {
+            const feedbackKey = 'np_feedback';
+            const feedbacks = JSON.parse(localStorage.getItem(feedbackKey) || '[]');
+            const feedbackList = document.getElementById('feedback-list');
+            if (feedbacks.length === 0) {
+                feedbackList.innerHTML = '<div style="text-align:center; color:#888; padding:40px;">No feedback yet. Be the first to share your thoughts!</div>';
+            } else {
+                const characterIcons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
+                feedbackList.innerHTML = feedbacks.map((fb) => {
+                    const date = new Date(fb.timestamp);
+                    const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+                    const icon = characterIcons[fb.character] || '✨';
+                    return `<div style="background:rgba(0,0,0,0.3); border-radius:12px; padding:15px; margin-bottom:12px; text-align:left;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div><b style="color:var(--np-orange);">${icon} ${fb.user}</b><span style="color:#888; font-size:11px; margin-left:8px;">${formattedDate}</span></div><span style="color:#00ff88; font-size:11px; font-weight:800;">${fb.score} pts</span></div><p style="margin:0; color:#fff; font-size:13px; line-height:1.5; font-style:italic;">"${fb.feedback}"</p></div>`;
+                }).reverse().join('');
+            }
+            navigate('screen-feedback');
+        }
+
+        function finishGame() {
+            document.getElementById('map-bar').classList.add('hidden');
+            const scores = storage.getTotalScore();
+            const data = storage.getUserData();
+            let walkingTotal = 0;
+            let digitalTotal = 0;
+            ['leo', 'ollie', 'momo'].forEach(char => {
+                if (data[char]) Object.values(data[char]).forEach(score => walkingTotal += score);
+            });
+            ['sage', 'felix', 'sparky'].forEach(char => {
+                if (data[char]) Object.values(data[char]).forEach(score => digitalTotal += score);
+            });
+            document.getElementById('res-walking').innerText = walkingTotal;
+            document.getElementById('res-digital').innerText = digitalTotal;
+            document.getElementById('res-total').innerText = `${scores.total} pts`;
+            const switchButton = document.getElementById('switch-btn');
+            switchButton.innerText = state.currentMode === 'walking' ? "TRY DIGITAL TRAIL" : "TRY WALKING TRAIL";
+            updateLeaderboard();
+            navigate('screen-finish');
+        }
+
+        function updateAttempts() {
+            document.getElementById('attempts-display').innerText = "ATTEMPTS LEFT: " + "⭐".repeat(state.attemptsLeft);
+        }
+
+        function updateNodes() {
+            document.querySelectorAll('.node').forEach((node, index) => {
+                if (index < state.currentStage) node.className = "node done";
+                else if (index === state.currentStage) node.className = "node active";
+                else node.className = "node";
+            });
+        }
+
+        function updateHeaderScore() {
+            const scores = storage.getTotalScore();
+            document.getElementById('header-score').innerText = `PTS: ${scores.total}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('mute-btn').addEventListener('click', toggleMute);
+            document.getElementById('start-btn').addEventListener('click', enterApp);
+            document.getElementById('ready-btn').addEventListener('click', showQuiz);
+            document.getElementById('submit-feedback-btn').addEventListener('click', submitFeedback);
+            document.getElementById('view-feedback-btn').addEventListener('click', viewAllFeedback);
+            document.getElementById('switch-btn').addEventListener('click', startOppositeMode);
+            document.getElementById('restart-btn').addEventListener('click', () => location.reload());
+            document.getElementById('back-to-finish').addEventListener('click', () => navigate('screen-finish'));
+            document.querySelectorAll('.char-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    const name = e.currentTarget.dataset.char;
+                    const icon = e.currentTarget.dataset.icon;
+                    const mode = e.currentTarget.dataset.mode;
+                    selectChar(name, icon, mode);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
