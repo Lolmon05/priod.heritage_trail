@@ -14,6 +14,10 @@
             --np-blue: #004d99;
             --glass: rgba(0, 15, 35, 0.95);
             --glass-border: rgba(255, 255, 255, 0.2);
+            --rare: #4dabf7;
+            --epic: #ae3ec9;
+            --legendary: #f59f00;
+            --mythic: #ff0080;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -48,6 +52,21 @@
             position: absolute; left: 15px; top: 15px; font-weight: 800;
             background: var(--np-orange); color: #fff;
             padding: 5px 12px; border-radius: 20px; font-size: 11px;
+        }
+
+        .coin-display {
+            position: absolute; left: 15px; top: 50px; font-weight: 800;
+            background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000;
+            padding: 5px 12px; border-radius: 20px; font-size: 11px;
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        .shop-btn {
+            position: absolute; right: 60px; top: 15px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e); border: none; color: #000;
+            width: 35px; height: 35px; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            z-index: 100; font-size: 18px; font-weight: 800;
         }
 
         .crest-container {
@@ -161,13 +180,13 @@
         }
         @keyframes walkAni { 0% { left: -50px; } 100% { left: 110%; } }
 
-        input[type="text"] {
+        input[type="text"], input[type="password"] {
             width: 100%; padding: 15px; border-radius: 10px; 
             border: 1px solid var(--glass-border); margin-bottom: 10px;
             background: rgba(255,255,255,0.1); color: white;
             font-family: 'Outfit'; font-size: 14px;
         }
-        input[type="text"]::placeholder { color: rgba(255,255,255,0.5); }
+        input[type="text"]::placeholder, input[type="password"]::placeholder { color: rgba(255,255,255,0.5); }
         
         .list-container {
             background: rgba(0,0,0,0.3);
@@ -218,11 +237,135 @@
             font-weight: 800;
             color: #00ff88;
         }
+
+        /* Gacha System Styles */
+        .gacha-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .gacha-box {
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,237,78,0.2));
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .gacha-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255,215,0,0.5);
+        }
+
+        .gacha-box.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .gacha-cost {
+            color: #ffd700;
+            font-weight: 800;
+            font-size: 16px;
+            margin: 5px 0;
+        }
+
+        .cosmetic-item {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.2s;
+        }
+
+        .cosmetic-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .cosmetic-item.rare { border-color: var(--rare); }
+        .cosmetic-item.epic { border-color: var(--epic); }
+        .cosmetic-item.legendary { border-color: var(--legendary); }
+        .cosmetic-item.mythic { border-color: var(--mythic); box-shadow: 0 0 15px var(--mythic); }
+
+        .rarity-badge {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .rarity-rare { background: var(--rare); color: #000; }
+        .rarity-epic { background: var(--epic); color: #fff; }
+        .rarity-legendary { background: var(--legendary); color: #000; }
+        .rarity-mythic { background: var(--mythic); color: #fff; }
+
+        .cosmetic-icon {
+            font-size: 32px;
+        }
+
+        .cosmetic-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .cosmetic-name {
+            font-weight: 800;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .gacha-result {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 15px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .gacha-result.active {
+            display: block;
+            animation: gachaReveal 0.5s ease-out;
+        }
+
+        @keyframes gachaReveal {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .gacha-result-icon {
+            font-size: 64px;
+            margin: 10px 0;
+        }
+
+        .character-display {
+            font-size: 60px;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .equipped-cosmetic {
+            position: absolute;
+            font-size: 20px;
+            transform: translate(-50%, -50%);
+        }
+
+        .equipped-cosmetic.hat { top: -15px; left: 50%; }
+        .equipped-cosmetic.accessory { top: 10px; right: -10px; }
     </style>
 </head>
 <body>
 
-    <audio id="bgm" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
+    <audio id="bgm" loop><source src="https://www.bensound.com/bensound-music/bensound-creativeminds.mp3" type="audio/mpeg"></audio>
     <audio id="sfx-ding"><source src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" type="audio/mpeg"></audio>
 
     <div id="transition-overlay">
@@ -233,9 +376,12 @@
     <div class="app">
         <header>
             <div class="score-display" id="header-score">PTS: 0</div>
+            <div class="coin-display" id="header-coins">🪙 0</div>
+            <button class="shop-btn" id="shop-btn" title="Shop & Inventory">🛍️</button>
             <button class="audio-toggle" id="mute-btn">🔊</button>
             <div class="crest-container">
-                <img src="channels4_profile.jpg" alt="NP Logo">
+               <img src="https://sifma.org.sg/media/ax0pg51v/np_logo_full_colour_vertical.jpg" alt="NP Logo">
+
             </div>
             <h1 style="margin:0; font-size: 16px; letter-spacing: 1px;">MEMORY TRAIL</h1>
         </header>
@@ -249,8 +395,49 @@
         <div id="screen-start" class="screen active">
             <div class="card">
                 <h2 style="margin-top:0;">WELCOME</h2>
-                <input type="text" id="username-input" placeholder="Enter Your Name">
-                <button class="btn-action" id="start-btn">START JOURNEY</button>
+                
+                <div id="login-form">
+                    <input type="text" id="login-username" placeholder="Username">
+                    <input type="password" id="login-password" placeholder="Password">
+                    <button class="btn-action" id="login-btn">LOGIN</button>
+                    <button class="btn-action" style="background:#444; margin-top:5px;" id="show-register-btn">CREATE NEW ACCOUNT</button>
+                </div>
+                
+                <div id="register-form" style="display:none;">
+                    <input type="text" id="register-username" placeholder="Choose Username">
+                    <input type="password" id="register-password" placeholder="Choose Password">
+                    <input type="password" id="register-confirm" placeholder="Confirm Password">
+                    <button class="btn-action" id="register-btn">CREATE ACCOUNT</button>
+                    <button class="btn-action" style="background:#444; margin-top:5px;" id="show-login-btn">BACK TO LOGIN</button>
+                </div>
+                
+                <div id="login-message" style="margin-top:10px; font-size:12px; text-align:center; display:none;"></div>
+            </div>
+        </div>
+
+        <div id="screen-daily" class="screen">
+            <div class="card">
+                <h2 style="margin:0 0 15px 0;">📅 DAILY DASHBOARD</h2>
+                
+                <div style="background:rgba(255,107,0,0.1); border:1px solid var(--np-orange); border-radius:12px; padding:15px; margin-bottom:15px;">
+                    <div style="display:flex; justify-content:space-around; text-align:center;">
+                        <div>
+                            <div style="font-size:28px; color:var(--np-orange); font-weight:800;" id="streak-count">0</div>
+                            <div style="font-size:10px; color:#999;">🔥 DAY STREAK</div>
+                        </div>
+                        <div>
+                            <div style="font-size:28px; color:#00ff88; font-weight:800;" id="total-logins">0</div>
+                            <div style="font-size:10px; color:#999;">📊 TOTAL LOGINS</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background:rgba(0,0,0,0.3); border-radius:12px; padding:15px; margin-bottom:15px;">
+                    <h4 style="margin:0 0 12px 0; color:#00d4ff; font-size:14px;">⭐ TODAY'S TASK</h4>
+                    <div id="daily-task-content"></div>
+                </div>
+                
+                <button class="btn-action" id="start-journey-btn">START JOURNEY</button>
             </div>
         </div>
 
@@ -258,35 +445,35 @@
             <div class="card">
                 <h3 style="margin:0;">CHOOSE YOUR GUIDE</h3>
                 
-                <div class="topic-label">1. NP History</div>
-                <div class="char-grid">
-                    <div class="char-card" data-char="leo" data-icon="🦁" data-mode="walking">
-                        <span>🦁</span><b>Leo</b><span class="tag tag-walk">Walking Trail</span>
-                    </div>
-                    <div class="char-card" data-char="sage" data-icon="🦉" data-mode="digital">
-                        <span>🦉</span><b>Sage</b><span class="tag tag-digi">Digital Trail</span>
-                    </div>
-                </div>
-                
-                <div class="topic-label">2. NP Founders</div>
-                <div class="char-grid">
-                    <div class="char-card" data-char="ollie" data-icon="🦦" data-mode="walking">
-                        <span>🦦</span><b>Ollie</b><span class="tag tag-walk">Walking Trail</span>
-                    </div>
-                    <div class="char-card" data-char="felix" data-icon="🐱" data-mode="digital">
-                        <span>🐱</span><b>Felix</b><span class="tag tag-digi">Digital Trail</span>
-                    </div>
-                </div>
-                
-                <div class="topic-label">3. Famous Alumni</div>
-                <div class="char-grid">
-                    <div class="char-card" data-char="momo" data-icon="🐒" data-mode="walking">
-                        <span>🐒</span><b>Momo</b><span class="tag tag-walk">Walking Trail</span>
-                    </div>
-                    <div class="char-card" data-char="sparky" data-icon="🐿️" data-mode="digital">
-                        <span>🐿️</span><b>Sparky</b><span class="tag tag-digi">Digital Trail</span>
-                    </div>
-                </div>
+              <div class="topic-label">1. NP History</div>
+<div class="char-grid">
+    <div class="char-card" data-char="leo" data-icon="🦁" data-mode="walking">
+        <span id="char-display-leo">🦁</span><b>Leo</b><span class="tag tag-walk">Walking Trail</span>
+    </div>
+    <div class="char-card" data-char="sage" data-icon="🦉" data-mode="digital">
+        <span id="char-display-sage">🦉</span><b>Sage</b><span class="tag tag-digi">Digital Trail</span>
+    </div>
+</div>
+
+<div class="topic-label">2. NP Founders</div>
+<div class="char-grid">
+    <div class="char-card" data-char="ollie" data-icon="🦦" data-mode="walking">
+        <span id="char-display-ollie">🦦</span><b>Ollie</b><span class="tag tag-walk">Walking Trail</span>
+    </div>
+    <div class="char-card" data-char="felix" data-icon="🐱" data-mode="digital">
+        <span id="char-display-felix">🐱</span><b>Felix</b><span class="tag tag-digi">Digital Trail</span>
+    </div>
+</div>
+
+<div class="topic-label">3. Famous Alumni</div>
+<div class="char-grid">
+    <div class="char-card" data-char="momo" data-icon="🐒" data-mode="walking">
+        <span id="char-display-momo">🐒</span><b>Momo</b><span class="tag tag-walk">Walking Trail</span>
+    </div>
+    <div class="char-card" data-char="sparky" data-icon="🐿️" data-mode="digital">
+        <span id="char-display-sparky">🐿️</span><b>Sparky</b><span class="tag tag-digi">Digital Trail</span>
+    </div>
+</div>
             </div>
         </div>
 
@@ -311,12 +498,66 @@
             </div>
         </div>
 
+        <div id="screen-shop" class="screen">
+            <div class="card">
+                <h2 style="margin:0 0 15px 0;">🛍️ SHOP & INVENTORY</h2>
+                
+                <div style="background:rgba(255,215,0,0.1); border:1px solid #ffd700; border-radius:12px; padding:15px; margin-bottom:15px; text-align:center;">
+                    <div style="font-size:24px; color:#ffd700; font-weight:800;" id="shop-coins-display">🪙 0</div>
+                    <div style="font-size:11px; color:#999; margin-top:5px;">Your Coins</div>
+                </div>
+
+                <h3 style="margin:15px 0 10px 0; font-size:14px; color:var(--np-orange);">🎰 GACHA SYSTEM</h3>
+               <div class="gacha-container">
+                    <div class="gacha-box" id="gacha-normal" data-cost="100">
+                        <div style="font-size:32px;">📦</div>
+                        <div style="font-weight:800; margin:5px 0;">Normal Gacha</div>
+                        <div class="gacha-cost">🪙 100</div>
+                        <div style="font-size:10px; color:#999;">Common - Epic</div>
+                    </div>
+                    <div class="gacha-box" id="gacha-premium" data-cost="300">
+                        <div style="font-size:32px;">💎</div>
+                        <div style="font-weight:800; margin:5px 0;">Premium Gacha</div>
+                        <div class="gacha-cost">🪙 300</div>
+                        <div style="font-size:10px; color:#999;">Epic - Mythic</div>
+                    </div>
+                </div>
+
+                <div style="background:rgba(0,0,0,0.3); border-radius:12px; padding:15px; margin:15px 0;">
+                    <h4 style="margin:0 0 10px 0; font-size:13px; color:#00d4ff; text-align:center;">📋 AVAILABLE COSMETICS</h4>
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <button id="preview-hats-btn" class="btn-action" style="padding:8px; font-size:11px; flex:1; background:#444;">View Hats</button>
+                        <button id="preview-accessories-btn" class="btn-action" style="padding:8px; font-size:11px; flex:1; background:#444;">View Accessories</button>
+                    </div>
+                    <div id="cosmetic-preview-list" style="max-height:200px; overflow-y:auto;"></div>
+                </div>
+
+                <div id="gacha-result" class="gacha-result">
+                    <div id="gacha-result-icon" class="gacha-result-icon"></div>
+                    <div id="gacha-result-name" style="font-weight:800; font-size:18px; margin:10px 0;"></div>
+                    <div id="gacha-result-rarity" style="margin:10px 0;"></div>
+                </div>
+
+                <h3 style="margin:20px 0 10px 0; font-size:14px; color:var(--np-orange);">🎨 YOUR COSMETICS</h3>
+                <div id="cosmetics-list" style="max-height:300px; overflow-y:auto;"></div>
+
+                <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--glass-border);">
+                    <h3 style="margin:0 0 10px 0; font-size:14px; color:var(--np-orange);">👤 CHARACTER CUSTOMIZATION</h3>
+                    <div class="character-display" id="character-preview"></div>
+                    <div id="equipped-cosmetics" style="font-size:12px; color:#999; margin-top:10px;"></div>
+                </div>
+
+                <button class="btn-action" style="background:#444; margin-top:15px;" id="back-from-shop-btn">BACK</button>
+            </div>
+        </div>
+
         <div id="screen-finish" class="screen">
             <div class="card">
                 <h2 style="margin:0 0 15px 0;">🎉 JOURNEY COMPLETE!</h2>
                 <div style="text-align:left; background:rgba(0,0,0,0.3); padding:15px; border-radius:12px; font-size:12px; margin: 10px 0;">
                     <p style="margin:5px 0;">Walking Trail: <b id="res-walking" style="color:#00ff88">0</b> pts</p>
                     <p style="margin:5px 0;">Digital Trail: <b id="res-digital" style="color:#00d4ff">0</b> pts</p>
+                    <p style="margin:5px 0;">Daily Tasks: <b id="res-daily" style="color:#ffaa00">0</b> pts</p>
                     <p style="font-weight:800; border-top:1px solid #444; margin-top:10px; padding-top:10px; margin-bottom:0;">
                         Total Score: <b id="res-total" style="color:var(--np-orange)">0 pts</b>
                     </p>
@@ -363,7 +604,9 @@
             currentStage: 0,
             attemptsLeft: 3,
             isMuted: false,
-            quizAnswered: false
+            quizAnswered: false,
+            dailyTaskCompleted: false,
+            accountData: null
         };
 
         const audio = {
@@ -371,36 +614,220 @@
             sfx: document.getElementById('sfx-ding')
         };
 
+        // Cosmetic items database
+        const cosmeticDatabase = {
+            hats: [
+                { id: 'crown_rare', name: 'Golden Crown', icon: '👑', rarity: 'rare', type: 'hat', forChar: 'all' },
+                { id: 'cap_rare', name: 'Adventure Cap', icon: '🧢', rarity: 'rare', type: 'hat', forChar: 'all' },
+                { id: 'hat_epic', name: 'Mystic Hat', icon: '🎩', rarity: 'epic', type: 'hat', forChar: 'all' },
+                { id: 'cap_epic', name: 'Hero Cap', icon: '⛑️', rarity: 'epic', type: 'hat', forChar: 'all' },
+                { id: 'crown_legendary', name: 'Royal Crown', icon: '👑', rarity: 'legendary', type: 'hat', forChar: 'all' },
+                { id: 'halo_legendary', name: 'Divine Halo', icon: '😇', rarity: 'legendary', type: 'hat', forChar: 'all' },
+                { id: 'crown_mythic', name: 'Legendary Crown', icon: '👑', rarity: 'mythic', type: 'hat', forChar: 'all' },
+                { id: 'star_mythic', name: 'Stellar Aura', icon: '⭐', rarity: 'mythic', type: 'hat', forChar: 'all' }
+            ],
+            accessories: [
+                { id: 'glasses_rare', name: 'Cool Shades', icon: '🕶️', rarity: 'rare', type: 'accessory', forChar: 'all' },
+                { id: 'tie_rare', name: 'Classy Tie', icon: '👔', rarity: 'rare', type: 'accessory', forChar: 'all' },
+                { id: 'glasses_epic', name: 'Smart Glasses', icon: '🤓', rarity: 'epic', type: 'accessory', forChar: 'all' },
+                { id: 'badge_epic', name: 'Honor Badge', icon: '🎖️', rarity: 'epic', type: 'accessory', forChar: 'all' },
+                { id: 'medal_legendary', name: 'Champion Medal', icon: '🏅', rarity: 'legendary', type: 'accessory', forChar: 'all' },
+                { id: 'crystal_legendary', name: 'Power Crystal', icon: '💎', rarity: 'legendary', type: 'accessory', forChar: 'all' },
+                { id: 'orb_mythic', name: 'Mystic Orb', icon: '🔮', rarity: 'mythic', type: 'accessory', forChar: 'all' },
+                { id: 'flame_mythic', name: 'Eternal Flame', icon: '🔥', rarity: 'mythic', type: 'accessory', forChar: 'all' }
+            ]
+        };
+
+        // Gacha probabilities
+        const gachaRates = {
+            normal: { rare: 50, epic: 30, legendary: 18, mythic: 2 },
+            premium: { rare: 0, epic: 40, legendary: 45, mythic: 15 }
+        };
+
         const storyData = {
             leo: [
-                { title: "NP History - Stage 1", question: "Where did classes first begin?", options: ["Tank Road", "Clementi Road", "Orchard", "Jurong"], answer: "Tank Road", exp: "Leo", icon: "🦁", fact: "NP was founded at Tank Road in 1963, a humble beginning for our great institution.", loc: "Find the Founding Plaque near Block 1 Main Entrance!" },
-                { title: "NP History - Stage 2", question: "When did NP move to Clementi campus?", options: ["1998", "2000", "2005", "1995"], answer: "1998", exp: "Leo", icon: "🦁", fact: "In 1998, NP moved to our current Clementi campus, expanding our facilities and capabilities.", loc: "Visit the Campus Model at Block 1 Level 1 to see the layout!" },
-                { title: "NP History - Stage 3", question: "What does NP stand for?", options: ["Ngee Ann Polytechnic", "National Polytechnic", "New Polytechnic", "North Polytechnic"], answer: "Ngee Ann Polytechnic", exp: "Leo", icon: "🦁", fact: "Ngee Ann means 'Best of Righteousness' in Teochew, reflecting our values and heritage.", loc: "Check out the Heritage Corner at Block 83 to learn more about our name!" }
+                { title: "NP History - Stage 1",
+                 question: "Where did classes first begin?",
+                 image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJTDSEgbt9QrEv7qi8ryFDNDvKTA36vPzdMw&s",  
+                 options: ["Tank Road", "Clementi Road", "Orchard", "Jurong"],
+                 answer: "Tank Road", 
+                 exp: "Leo", 
+                 icon: "🦁", 
+                 fact: "Hi, I'm Leo the Lion! 🦁 Let's explore NP's history. See this massive campus? In 1963, we weren't here at Clementi Road we started at Tank Road! Want to see how it looked? Complete the puzzle to reveal our origins.", 
+                 loc: "Find the Founding Plaque near Block 1 Main Entrance!"},
+
+                { title: "NP History - Stage 2",
+                 question: "When did NP move to Clementi campus?", 
+                 image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_tZDZ1SGb0yyvIx1TmaBSu84YXNQJhJjH0Q&s", 
+                 options: ["1998", "2000", "2005", "1995"], 
+                 answer: "1998", 
+                 exp: "Leo",
+                  icon: "🦁", 
+                  fact: "By the end of the 1990s, NP entered a new phase of growth with a shift to a larger, purpose-built environment.", 
+                  loc: "Visit the Campus Model at Block 1 Level 1 to see the layout!"},
+
+                { title: "NP History - Stage 3",
+                 question: "What does NP stand for?", 
+                 image: "https://www.np.edu.sg/images/default-source/about-np-2/about-np.jpg?sfvrsn=81d77414_5", 
+                 options: ["Ngee Ann Polytechnic", "National Polytechnic", "New Polytechnic", "North Polytechnic"], 
+                 answer: "Ngee Ann Polytechnic", 
+                 exp: "Leo", 
+                 icon: "🦁", 
+                 fact: "The name “Ngee Ann” carries a Teochew meaning that embodies moral excellence and strong values.", 
+                 loc: "Check out the Heritage Corner at Block 83 to learn more about our name!" }
             ],
             sage: [
-                { title: "NP History - Stage 1", question: "Where did classes first begin?", options: ["Tank Road", "Clementi Road", "Orchard", "Jurong"], answer: "Tank Road", exp: "Sage", icon: "🦉", fact: "Historical archives show our first campus was at Tank Road, where it all began.", media: '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' },
-                { title: "NP History - Stage 2", question: "When did NP move to Clementi campus?", options: ["1998", "2000", "2005", "1995"], answer: "1998", exp: "Sage", icon: "🦉", fact: "The move to Clementi in 1998 marked a new era of growth and innovation for NP.", media: '<iframe src="https://www.youtube.com/embed/jNQXAC9IVRw" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' },
-                { title: "NP History - Stage 3", question: "What does 'Ngee Ann' mean?", options: ["Best of Righteousness", "New Achievement", "Great Learning", "Noble Ambition"], answer: "Best of Righteousness", exp: "Sage", icon: "🦉", fact: "Our name 'Ngee Ann' reflects the Teochew values of righteousness and moral excellence.", media: '<iframe src="https://www.youtube.com/embed/9bZkp7q19f0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' }
+                { title: "NP History - Stage 1", 
+                question: "Where did classes first begin?", 
+                 image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJTDSEgbt9QrEv7qi8ryFDNDvKTA36vPzdMw&s", 
+                 options: ["Tank Road", "Clementi Road", "Orchard", "Jurong"], 
+                 answer: "Tank Road", 
+                 exp: "Sage",
+                  icon: "🦉", 
+                  fact: "Early records point to a modest starting place along a historic road where NP first took root.", 
+                  media: '<iframe width="560" height="315" src="https://www.youtube.com/embed/2e_3UKU1esw?si=pMLhvoqXtMgKV57D" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>' },
+               
+                  { title: "NP History - Stage 2",
+                 question: "When did NP move to Clementi campus?",  
+                 image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_tZDZ1SGb0yyvIx1TmaBSu84YXNQJhJjH0Q&s", 
+                 options: ["1998", "2000", "2005", "1995"], 
+                 answer: "1998", exp: "Sage", 
+                 icon: "🦉", 
+                 fact: "A significant relocation in the late 1990s signaled the beginning of a transformative chapter for NP.", 
+                },
+              
+                 { title: "NP History - Stage 3", 
+                question: "What does 'Ngee Ann' mean?",  
+                image: "https://www.np.edu.sg/images/default-source/about-np-2/about-np.jpg?sfvrsn=81d77414_5", 
+                options: ["Best of Righteousness", "New Achievement", "Great Learning", "Noble Ambition"],
+                 answer: "Best of Righteousness", 
+                 exp: "Sage", 
+                 icon: "🦉", 
+                 fact: "The name “Ngee Ann” comes from Teochew roots and carries ideals tied to strong moral character.", 
+                  }
             ],
             ollie: [
-                { title: "NP Founders - Stage 1", question: "Who founded Ngee Ann Polytechnic?", options: ["Ngee Ann Kongsi", "Government", "Teachers Association", "British Council"], answer: "Ngee Ann Kongsi", exp: "Ollie", icon: "🦦", fact: "The Ngee Ann Kongsi, a Teochew clan association, founded NP in 1963 to provide quality education and preserve cultural heritage.", loc: "Visit the Library Level 4 Heritage Wall to learn more about our founding!" },
-                { title: "NP Founders - Stage 2", question: "What community does Ngee Ann Kongsi represent?", options: ["Teochew", "Hokkien", "Cantonese", "Hakka"], answer: "Teochew", exp: "Ollie", icon: "🦦", fact: "Ngee Ann Kongsi represents the Teochew community and has been serving education since 1845.", loc: "Explore the Teochew Heritage exhibit at Block 1 Level 2!" },
-                { title: "NP Founders - Stage 3", question: "What was the main goal of founding NP?", options: ["Quality education for all", "Make money", "Build buildings", "Create jobs"], answer: "Quality education for all", exp: "Ollie", icon: "🦦", fact: "NP was founded with the mission to provide accessible, quality technical education to Singapore's youth.", loc: "Read the Mission Statement plaque at the Main Entrance!" }
+                { title: "NP Founders - Stage 1", 
+                question: "Who founded Ngee Ann Polytechnic?",  
+                image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4zMSeI-80HdliQ4a2bmh4ADErDgNohcmq0g&s",
+                 options: ["Ngee Ann Kongsi", "Government", "Teachers Association", "British Council"],
+                  answer: "Ngee Ann Kongsi",
+                   exp: "Ollie", 
+                   icon: "🦦", 
+                   fact: "NP was established in the early 1960s by a community organisation rooted in Teochew heritage, with a strong focus on education and culture.", 
+                   loc: "Visit the Library Level 4 Heritage Wall to learn more about our founding!" },
+
+                { title: "NP Founders - Stage 2",
+                 question: "What community does Ngee Ann Kongsi represent?",  
+                image: "https://seaheuchin.info/Teochew_Building_Mar_06.JPG", 
+                options: ["Teochew", "Hokkien", "Cantonese", "Hakka"], 
+                answer: "Teochew", 
+                exp: "Ollie", 
+                icon: "🦦", 
+                fact: "This long-standing organisation has supported education for well over a century.",
+                 loc: "Explore the Teochew Heritage exhibit at Block 1 Level 2!" },
+
+                { title: "NP Founders - Stage 3", 
+                question: "What was the main goal of founding NP?",
+                 image: "https://media.licdn.com/dms/image/v2/D4E12AQFQpJ-T7l_uxQ/article-cover_image-shrink_600_2000/article-cover_image-shrink_600_2000/0/1713972138640?e=2147483647&v=beta&t=K7maKwlmD8oEPO_YVcf-_XCy1AvnX7t66Zp8-9jYmME",  
+                 options: ["Quality education for all", "Make money", "Build buildings", "Create jobs"],
+                  answer: "Quality education for all",
+                   exp: "Ollie", 
+                   icon: "🦦", 
+                   fact: "NP’s beginnings were guided by a vision to open pathways of practical learning for young people.",
+                    loc: "Read the Mission Statement plaque at the Main Entrance!" }
             ],
             felix: [
-                { title: "NP Founders - Stage 1", question: "What year was Ngee Ann Polytechnic founded?", options: ["1963", "1965", "1960", "1970"], answer: "1963", exp: "Felix", icon: "🐱", fact: "Ngee Ann Kongsi established NP in 1963 to provide quality education and preserve Teochew heritage through learning.", media: '<iframe src="https://www.youtube.com/embed/2e_3UKU1esw" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' },
-                { title: "NP Founders - Stage 2", question: "When was Ngee Ann Kongsi established?", options: ["1845", "1900", "1920", "1800"], answer: "1845", exp: "Felix", icon: "🐱", fact: "Ngee Ann Kongsi was established in 1845, making it one of Singapore's oldest community organizations.", media: '<iframe src="https://www.youtube.com/embed/QH2-TGUlwu4" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' },
-                { title: "NP Founders - Stage 3", question: "How many polytechnics were there when NP was founded?", options: ["2", "1", "3", "5"], answer: "2", exp: "Felix", icon: "🐱", fact: "NP was Singapore's second polytechnic, following Singapore Polytechnic founded in 1954.", media: '<iframe src="https://www.youtube.com/embed/3JZ_D3ELwOQ" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' }
+                { title: "NP Founders - Stage 1",
+                 question: "What year was Ngee Ann Polytechnic founded?", 
+                 image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4zMSeI-80HdliQ4a2bmh4ADErDgNohcmq0g&s", 
+                  options: ["1963", "1965", "1960", "1970"], 
+                  answer: "1963",
+                   exp: "Felix", 
+                   icon: "🐱", 
+                   fact: "In the early 1960s, NP was set up by a heritage organisation with deep Teochew roots, guided by a belief in education and cultural continuity.",
+                    media: '<iframe width="560" height="315" src="https://www.youtube.com/embed/2e_3UKU1esw?si=pMLhvoqXtMgKV57D" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>' },
+               
+                    { title: "NP Founders - Stage 2",
+                 question: "When was Ngee Ann Kongsi established?",  
+                 image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Ngee_Ann_City_%282023-06-05%29_IMG_01.jpg/640px-Ngee_Ann_City_%282023-06-05%29_IMG_01.jpg", 
+                 options: ["1845", "1900", "1920", "1800"], 
+                 answer: "1845", 
+                 exp: "Felix", 
+                 icon: "🐱", 
+                 fact: "Its establishment dates back to the 1800s, placing it among the earliest community organisations in the nation.",
+                   },
+             
+                  { title: "NP Founders - Stage 3", 
+                question: "How many polytechnics were there when NP was founded?", 
+                 image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJTDSEgbt9QrEv7qi8ryFDNDvKTA36vPzdMw&s",
+                  options: ["2", "1", "3", "5"], 
+                  answer: "2", 
+                  exp: "Felix",
+                  icon: "🐱", 
+                  fact: "Following the establishment of the nation’s first polytechnic, NP opened its doors as the second of its kind.",
+                   }
             ],
             momo: [
-                { title: "Famous Alumni - Stage 1", question: "Who is a famous film director from NP?", options: ["Anthony Chen", "Jack Neo", "Christopher Nolan", "Jack Cheng"], answer: "Anthony Chen", exp: "Momo", icon: "🐒", fact: "Anthony Chen graduated from NP's Film, Sound & Video programme and won the prestigious Camera d'Or at Cannes Film Festival in 2013 for his debut feature 'Ilo Ilo'!", loc: "Check out the Alumni Success Wall at Block 52 to see more inspiring NP graduates!" },
-                { title: "Famous Alumni - Stage 2", question: "Which NP school did Anthony Chen graduate from?", options: ["Film & Media Studies", "Business", "Engineering", "Design"], answer: "Film & Media Studies", exp: "Momo", icon: "🐒", fact: "The School of Film & Media Studies has produced many award-winning filmmakers and media professionals.", loc: "Visit the Media Studios at Block 51 to see where the magic happens!" },
-                { title: "Famous Alumni - Stage 3", question: "NP alumni work in diverse fields including:", options: ["All industries", "Only tech", "Only media", "Only business"], answer: "All industries", exp: "Momo", icon: "🐒", fact: "NP alumni excel across all sectors - from arts and healthcare to engineering and entrepreneurship!", loc: "Browse the Alumni Achievement Gallery at Block 1 Level 3!" }
+                { title: "Famous Alumni - Stage 1",
+                 question: "Who is a famous film director from NP?", 
+                  image: "https://variety.com/wp-content/uploads/2014/01/chen.jpg?w=1000&h=667&crop=1", 
+                  options: ["Anthony Chen", "Jack Neo", "Christopher Nolan", "Jack Cheng"], 
+                  answer: "Anthony Chen", 
+                  exp: "Momo", 
+                  icon: "🐒", 
+                  fact: "An NP alumnus from the Film, Sound & Video programme made waves internationally, winning a top award at Cannes in 2013 for his debut feature.", 
+                  loc: "Check out the Alumni Success Wall at Block 52 to see more inspiring NP graduates!" },
+
+                { title: "Famous Alumni - Stage 2", 
+                question: "Which NP school did Anthony Chen graduate from?",  
+                image: "https://www.np.edu.sg/images/default-source/schools-courses/school-of-film-media-studies/usp1.jpg?sfvrsn=607d62d6_8", 
+                options: ["Film & Media Studies", "Business", "Engineering", "Design"], 
+                answer: "Film & Media Studies", 
+                exp: "Momo",
+                 icon: "🐒", 
+                 fact: "From campus to cameras, this school has helped launch award-winning careers in film and media.",
+                 loc: "Visit the Media Studios at Block 51 to see where the magic happens!" },
+
+                { title: "Famous Alumni - Stage 3", 
+                question: "NP alumni work in diverse fields including:", 
+                image: "https://www.naa.edu.sg/wp-content/uploads/2024/10/alumni-img.jpg",  
+                options: ["All industries", "Only tech", "Only media", "Only business"], 
+                answer: "All industries", 
+                exp: "Momo", 
+                icon: "🐒", 
+                fact: "From innovation to the arts, NP alumni are making waves across multiple sectors.",
+                 loc: "Browse the Alumni Achievement Gallery at Block 1 Level 3!" }
             ],
-            sparky: [
-                { title: "Famous Alumni - Stage 1", question: "Which award did Anthony Chen win at Cannes?", options: ["Camera d'Or", "Palme d'Or", "Best Director", "Grand Prix"], answer: "Camera d'Or", exp: "Sparky", icon: "🐿️", fact: "Anthony Chen, NP Film graduate, made history winning the Camera d'Or at Cannes! Other notable NP alumni include entrepreneurs, artists, and industry leaders across various fields.", media: '<iframe src="https://www.youtube.com/embed/L_jWHffIx5E" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' },
-                { title: "Famous Alumni - Stage 2", question: "What is the title of Anthony Chen's award-winning film?", options: ["Ilo Ilo", "Wonder Boy", "Wet Season", "Singapore Dreaming"], answer: "Ilo Ilo", exp: "Sparky", icon: "🐿️", fact: "'Ilo Ilo' tells a touching story about a Filipino maid and a Singaporean family during the 1997 Asian Financial Crisis.", media: '<iframe src="https://www.youtube.com/embed/sEbKSYLA0_k" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' },
-                { title: "Famous Alumni - Stage 3", question: "What year did Anthony Chen win at Cannes?", options: ["2013", "2010", "2015", "2012"], answer: "2013", exp: "Sparky", icon: "🐿️", fact: "The 2013 Camera d'Or win put Singapore cinema on the global map and inspired many young filmmakers!", media: '<iframe src="https://www.youtube.com/embed/BaW_jenozKc" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>' }
+          sparky: [
+   
+    { 
+                 title: "Famous Alumni - Stage 1", 
+                 question: "Which award did Anthony Chen win at Cannes?",  
+                 image: "https://cdn.i-scmp.com/sites/default/files/styles/1020x680/public/2013/11/15/cbed19ad66bf7ebac2dbf57f3dc633d8.jpg?itok=Azo7dCuy",
+                 options: ["Camera d'Or", "Palme d'Or", "Best Director", "Grand Prix"], 
+                 answer: "Camera d'Or", 
+                 exp: "Sparky", 
+                 icon: "🐿️", 
+                 fact: "An NP Film graduate gained international acclaim at Cannes with a historic win.", 
+                 media: '<iframe width="560" height="315" src="https://www.youtube.com/embed/P5m4GFLZDaA?si=5B0p6AtljR5LzNBK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>' 
+    },
+                { title: "Famous Alumni - Stage 2", 
+                question: "What is the title of Anthony Chen's award-winning film?", 
+                image: "https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p10004403_p_v10_ac.jpg", 
+                 options: ["Ilo Ilo", "Wonder Boy", "Wet Season", "Singapore Dreaming"], 
+                 answer: "Ilo Ilo", 
+                 exp: "Sparky", 
+                 icon: "🐿️",
+                fact: "This debut film explores the bond between a household helper and a local family during a major 1990s financial crisis."},
+                { title: "Famous Alumni - Stage 3", 
+                question: "What year did Anthony Chen win at Cannes?", 
+                 image: "https://weekender.com.sg/wp-content/uploads/2013/09/48-Be-Happier-4-e1380275997452.jpg", 
+                 options: ["2013", "2010", "2015", "2012"], 
+                 answer: "2013", 
+                 exp: "Sparky", 
+                 icon: "🐿️", 
+                 fact: "The Cannes achievement marked a milestone for Singapore cinema and fueled inspiration among budding directors.", }
             ]
         };
 
@@ -424,6 +851,106 @@
                     return false;
                 }
             },
+            createAccount: (username, password) => {
+                const accountKey = `np_account_${username.toLowerCase()}`;
+                if (localStorage.getItem(accountKey)) return false;
+                const accountData = {
+                    username: username,
+                    password: password,
+                    createdAt: new Date().toISOString(),
+                    lastLogin: new Date().toISOString(),
+                    streak: 0,
+                    lastTaskDate: null,
+                    totalLogins: 1
+                };
+                localStorage.setItem(accountKey, JSON.stringify(accountData));
+                return true;
+            },
+            validateLogin: (username, password) => {
+                const accountKey = `np_account_${username.toLowerCase()}`;
+                const data = localStorage.getItem(accountKey);
+                if (!data) return false;
+                const account = JSON.parse(data);
+                if (account.password !== password) return false;
+                
+                const today = new Date().toDateString();
+                const lastLogin = account.lastLogin ? new Date(account.lastLogin).toDateString() : null;
+                
+                if (lastLogin !== today) {
+                    account.totalLogins = (account.totalLogins || 0) + 1;
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    if (lastLogin === yesterday.toDateString()) {
+                        account.streak = (account.streak || 0) + 1;
+                    } else if (lastLogin !== today) {
+                        account.streak = 1;
+                    }
+                    account.lastLogin = new Date().toISOString();
+                    localStorage.setItem(accountKey, JSON.stringify(account));
+                }
+                return account;
+            },
+            getAccountData: (username) => {
+                const accountKey = `np_account_${username.toLowerCase()}`;
+                const data = localStorage.getItem(accountKey);
+                return data ? JSON.parse(data) : null;
+            },
+           getCoins: () => {
+    const data = storage.getUserData();
+    // Give 1000 starting coins if coins haven't been set yet
+    if (data.coins === undefined) {
+        data.coins = 500;
+        storage.saveUserData(data);
+    }
+    return data.coins || 1000;
+},
+            addCoins: (amount) => {
+                const data = storage.getUserData();
+                data.coins = (data.coins || 0) + amount;
+                storage.saveUserData(data);
+                updateCoinDisplay();
+                return data.coins;
+            },
+            spendCoins: (amount) => {
+                const data = storage.getUserData();
+                const currentCoins = data.coins || 0;
+                if (currentCoins < amount) return false;
+                data.coins = currentCoins - amount;
+                storage.saveUserData(data);
+                updateCoinDisplay();
+                return true;
+            },
+            getCosmetics: () => {
+                const data = storage.getUserData();
+                return data.cosmetics || [];
+            },
+            addCosmetic: (cosmetic) => {
+                const data = storage.getUserData();
+                if (!data.cosmetics) data.cosmetics = [];
+                // Check if already owned
+                if (!data.cosmetics.find(c => c.id === cosmetic.id)) {
+                    data.cosmetics.push(cosmetic);
+                    storage.saveUserData(data);
+                    return true;
+                }
+                return false;
+            },
+            getEquippedCosmetics: () => {
+                const data = storage.getUserData();
+                return data.equippedCosmetics || {};
+            },
+            equipCosmetic: (cosmeticId, slot) => {
+                const data = storage.getUserData();
+                if (!data.equippedCosmetics) data.equippedCosmetics = {};
+                data.equippedCosmetics[slot] = cosmeticId;
+                storage.saveUserData(data);
+            },
+            unequipCosmetic: (slot) => {
+                const data = storage.getUserData();
+                if (!data.equippedCosmetics) data.equippedCosmetics = {};
+                delete data.equippedCosmetics[slot];
+                storage.saveUserData(data);
+            },
             saveScore: (points) => {
                 const data = storage.getUserData();
                 const charKey = state.currentChar;
@@ -431,18 +958,51 @@
                 const currentScore = data[charKey][state.currentStage] || 0;
                 if (points > currentScore) {
                     data[charKey][state.currentStage] = points;
+                    // Award coins based on points earned (1 coin per 10 points)
+                    const coinsEarned = Math.floor(points / 10);
+                    if (coinsEarned > 0) {
+                        data.coins = (data.coins || 0) + coinsEarned;
+                    }
                     storage.saveUserData(data);
+                    updateCoinDisplay();
                 }
             },
             getTotalScore: () => {
                 const data = storage.getUserData();
                 let total = 0;
                 Object.keys(data).forEach(charKey => {
-                    if (typeof data[charKey] === 'object') {
+                    if (typeof data[charKey] === 'object' && charKey !== 'dailyTaskBonus' && charKey !== 'cosmetics' && charKey !== 'equippedCosmetics') {
                         Object.values(data[charKey]).forEach(score => total += score);
                     }
                 });
                 return { total };
+            },
+            getDailyTask: () => {
+                const today = new Date().toDateString();
+                const account = storage.getAccountData(state.userName);
+                if (!account) return null;
+                
+                const tasks = [
+                    { id: 'trivia1', type: 'trivia', question: 'What year was NP founded?', options: ['1963', '1965', '1960', '1970'], answer: '1963', reward: 50 },
+                    { id: 'trivia2', type: 'trivia', question: 'Where was NP first located?', options: ['Tank Road', 'Clementi', 'Orchard', 'Jurong'], answer: 'Tank Road', reward: 50 },
+                    { id: 'trivia3', type: 'trivia', question: 'What does "Ngee Ann" mean?', options: ['Best of Righteousness', 'New Achievement', 'Great Learning', 'Noble Ambition'], answer: 'Best of Righteousness', reward: 50 },
+                    { id: 'trivia4', type: 'trivia', question: 'Who founded NP?', options: ['Ngee Ann Kongsi', 'Government', 'Teachers', 'British'], answer: 'Ngee Ann Kongsi', reward: 50 },
+                    { id: 'trivia5', type: 'trivia', question: 'Which award did Anthony Chen win?', options: ['Camera d\'Or', 'Palme d\'Or', 'Best Director', 'Grand Prix'], answer: 'Camera d\'Or', reward: 50 }
+                ];
+                
+                const dayIndex = Math.floor((new Date() - new Date('2026-01-01')) / (1000 * 60 * 60 * 24));
+                return tasks[dayIndex % tasks.length];
+            },
+            completeDailyTask: (taskId) => {
+                const account = storage.getAccountData(state.userName);
+                if (!account) return false;
+                const today = new Date().toDateString();
+                if (account.lastTaskDate === today) return false;
+                
+                account.lastTaskDate = today;
+                const accountKey = `np_account_${state.userName.toLowerCase()}`;
+                localStorage.setItem(accountKey, JSON.stringify(account));
+                return true;
             },
             getAllUsers: () => {
                 const users = [];
@@ -454,10 +1014,11 @@
                             const data = JSON.parse(localStorage.getItem(key));
                             let total = 0;
                             Object.keys(data).forEach(charKey => {
-                                if (typeof data[charKey] === 'object') {
+                                if (typeof data[charKey] === 'object' && charKey !== 'dailyTaskBonus' && charKey !== 'cosmetics' && charKey !== 'equippedCosmetics') {
                                     Object.values(data[charKey]).forEach(score => total += score);
                                 }
                             });
+                            total += (data.dailyTaskBonus || 0);
                             users.push({ name: userName, total: total });
                         } catch (e) {
                             console.error('Error parsing user data:', e);
@@ -480,71 +1041,510 @@
             document.getElementById('mute-btn').innerText = state.isMuted ? "🔇" : "🔊";
         }
 
-        function enterApp() {
-            const input = document.getElementById('username-input').value.trim();
-            if (!input) {
-                alert("Please enter your name to begin!");
+        function updateCoinDisplay() {
+            const coins = storage.getCoins();
+            document.getElementById('header-coins').innerHTML = `🪙 ${coins}`;
+            const shopCoins = document.getElementById('shop-coins-display');
+            if (shopCoins) shopCoins.innerHTML = `🪙 ${coins}`;
+        }
+
+        function rollGacha(type) {
+            const cost = parseInt(document.getElementById(`gacha-${type}`).dataset.cost);
+            const coins = storage.getCoins();
+            
+            if (coins < cost) {
+                alert(`Not enough coins! You need ${cost} coins.`);
                 return;
             }
-            state.userName = input;
-            navigate('screen-character');
-        }
 
-        function selectChar(name, icon, mode) {
-            document.getElementById('walking-char').innerText = icon;
-            state.currentMode = mode;
-            state.currentChar = name;
-            state.currentStage = 0;
-            audio.bgm.play().catch(e => console.log('Audio autoplay prevented:', e));
-            updateHeaderScore();
-            showClue();
-        }
+            if (!storage.spendCoins(cost)) return;
 
-        function startOppositeMode() {
-            const counterparts = { leo: 'sage', sage: 'leo', ollie: 'felix', felix: 'ollie', momo: 'sparky', sparky: 'momo' };
-            const icons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
-            const newChar = counterparts[state.currentChar];
-            state.currentChar = newChar;
-            state.currentMode = state.currentMode === 'walking' ? 'digital' : 'walking';
-            state.currentStage = 0;
-            document.getElementById('walking-char').innerText = icons[newChar];
-            showClue();
-        }
-
-        function showClue() {
-            document.getElementById('map-bar').classList.remove('hidden');
-            const data = storyData[state.currentChar][state.currentStage];
-            if (!data) {
-                console.error('No data found for', state.currentChar, state.currentStage);
-                return;
-            }
-            document.getElementById('clue-title').innerText = data.title;
-            const mediaBox = document.getElementById('clue-media');
-            const locationBox = document.getElementById('location-hint');
-            if (state.currentMode === 'walking') {
-                mediaBox.style.display = "none";
-                locationBox.style.display = "block";
-                document.getElementById('location-text').innerText = data.loc;
+            const rates = gachaRates[type];
+            const roll = Math.random() * 100;
+            let rarity = 'rare';
+            
+            if (type === 'normal') {
+                if (roll <= rates.mythic) rarity = 'mythic';
+                else if (roll <= rates.mythic + rates.legendary) rarity = 'legendary';
+                else if (roll <= rates.mythic + rates.legendary + rates.epic) rarity = 'epic';
+                else rarity = 'rare';
             } else {
-                locationBox.style.display = "none";
-                if (data.media) {
-                    mediaBox.innerHTML = data.media;
-                    mediaBox.style.display = "block";
-                } else {
-                    mediaBox.style.display = "none";
-                }
+                if (roll <= rates.mythic) rarity = 'mythic';
+                else if (roll <= rates.mythic + rates.legendary) rarity = 'legendary';
+                else rarity = 'epic';
             }
-            document.getElementById('clue-quote').innerText = `${data.icon} ${data.exp}: "${data.fact}"`;
-            updateNodes();
-            navigate('screen-clue');
+
+            // Get all items of this rarity
+            const allItems = [...cosmeticDatabase.hats, ...cosmeticDatabase.accessories];
+            const itemsOfRarity = allItems.filter(item => item.rarity === rarity);
+            const randomItem = itemsOfRarity[Math.floor(Math.random() * itemsOfRarity.length)];
+
+            // Add to inventory
+            const isNew = storage.addCosmetic(randomItem);
+            
+            // Show result
+            showGachaResult(randomItem, isNew);
+            
+            // Update cosmetics list
+            if (document.getElementById('screen-shop').classList.contains('active')) {
+                updateCosmeticsList();
+            }
+
+            // Play sound
+            if (!state.isMuted) audio.sfx.play().catch(e => console.log('SFX play failed:', e));
+            
+            // Confetti based on rarity
+            const confettiColors = {
+                rare: ['#4dabf7'],
+                epic: ['#ae3ec9'],
+                legendary: ['#f59f00', '#ffd700'],
+                mythic: ['#ff0080', '#ff1493', '#ff69b4']
+            };
+            confetti({ 
+                particleCount: rarity === 'mythic' ? 200 : rarity === 'legendary' ? 150 : 100, 
+                spread: 70, 
+                origin: { y: 0.6 },
+                colors: confettiColors[rarity]
+            });
         }
+
+        function showGachaResult(item, isNew) {
+            const resultDiv = document.getElementById('gacha-result');
+            const iconDiv = document.getElementById('gacha-result-icon');
+            const nameDiv = document.getElementById('gacha-result-name');
+            const rarityDiv = document.getElementById('gacha-result-rarity');
+
+            iconDiv.innerText = item.icon;
+            nameDiv.innerText = item.name;
+            rarityDiv.innerHTML = `<span class="rarity-badge rarity-${item.rarity}">${item.rarity.toUpperCase()}</span> ${isNew ? '<span style="color:#00ff88;">✨ NEW!</span>' : '<span style="color:#999;">(Already Owned)</span>'}`;
+            
+            resultDiv.classList.add('active');
+            resultDiv.className = `gacha-result active ${item.rarity}`;
+            
+            setTimeout(() => {
+                resultDiv.classList.remove('active');
+            }, 3000);
+        }
+
+        function updateCosmeticsList() {
+            const cosmetics = storage.getCosmetics();
+            const listDiv = document.getElementById('cosmetics-list');
+            const equipped = storage.getEquippedCosmetics();
+
+            if (cosmetics.length === 0) {
+                listDiv.innerHTML = '<div style="text-align:center; color:#999; padding:20px; font-size:12px;">No cosmetics yet. Try the gacha!</div>';
+                return;
+            }
+
+            // Group by type
+            const hats = cosmetics.filter(c => c.type === 'hat');
+            const accessories = cosmetics.filter(c => c.type === 'accessory');
+
+            let html = '';
+            
+            if (hats.length > 0) {
+                html += '<div style="margin-bottom:15px;"><div style="font-size:11px; color:#999; margin-bottom:8px; text-transform:uppercase;">Hats</div>';
+                hats.forEach(cosmetic => {
+                    const isEquipped = equipped.hat === cosmetic.id;
+                    html += `
+                        <div class="cosmetic-item ${cosmetic.rarity}" style="${isEquipped ? 'border-color:var(--np-orange); background:rgba(255,107,0,0.1);' : ''}">
+                            <div class="cosmetic-icon">${cosmetic.icon}</div>
+                            <div class="cosmetic-info">
+                                <div class="cosmetic-name">${cosmetic.name}</div>
+                                <span class="rarity-badge rarity-${cosmetic.rarity}">${cosmetic.rarity.toUpperCase()}</span>
+                            </div>
+                            <button class="btn-action" style="padding:8px 15px; font-size:11px; width:auto; margin:0;" onclick="equipCosmetic('${cosmetic.id}', 'hat')">${isEquipped ? '✓ Equipped' : 'Equip'}</button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+            if (accessories.length > 0) {
+                html += '<div><div style="font-size:11px; color:#999; margin-bottom:8px; text-transform:uppercase;">Accessories</div>';
+                accessories.forEach(cosmetic => {
+                    const isEquipped = equipped.accessory === cosmetic.id;
+                    html += `
+                        <div class="cosmetic-item ${cosmetic.rarity}" style="${isEquipped ? 'border-color:var(--np-orange); background:rgba(255,107,0,0.1);' : ''}">
+                            <div class="cosmetic-icon">${cosmetic.icon}</div>
+                            <div class="cosmetic-info">
+                                <div class="cosmetic-name">${cosmetic.name}</div>
+                                <span class="rarity-badge rarity-${cosmetic.rarity}">${cosmetic.rarity.toUpperCase()}</span>
+                            </div>
+                            <button class="btn-action" style="padding:8px 15px; font-size:11px; width:auto; margin:0;" onclick="equipCosmetic('${cosmetic.id}', 'accessory')">${isEquipped ? '✓ Equipped' : 'Equip'}</button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            }
+
+      listDiv.innerHTML = html;
+        updateCharacterPreview();
+    }
+
+    function showCosmeticPreview(type) {
+        const previewDiv = document.getElementById('cosmetic-preview-list');
+        const items = type === 'hats' ? cosmeticDatabase.hats : cosmeticDatabase.accessories;
+        
+        let html = '';
+        items.forEach(item => {
+            html += `
+                <div class="cosmetic-item ${item.rarity}" style="margin-bottom:8px; padding:8px;">
+                    <div class="cosmetic-icon" style="font-size:24px;">${item.icon}</div>
+                    <div class="cosmetic-info">
+                        <div class="cosmetic-name" style="font-size:12px;">${item.name}</div>
+                        <span class="rarity-badge rarity-${item.rarity}">${item.rarity.toUpperCase()}</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        previewDiv.innerHTML = html;
+    }
+
+    function equipCosmetic(cosmeticId, slot) {
+        storage.equipCosmetic(cosmeticId, slot);
+        updateCosmeticsList();
+    }
+
+function updateCharacterPreview() {
+            const charIcons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
+            const currentIcon = charIcons[state.currentChar] || '👤';
+            const equipped = storage.getEquippedCosmetics();
+            const cosmetics = storage.getCosmetics();
+            
+            const hatCosmetic = cosmetics.find(c => c.id === equipped.hat);
+            const accessoryCosmetic = cosmetics.find(c => c.id === equipped.accessory);
+            
+            let html = `<div style="position:relative; display:inline-block;">${currentIcon}`;
+            
+            if (hatCosmetic) {
+                html += `<span class="equipped-cosmetic hat" style="font-size:24px;">${hatCosmetic.icon}</span>`;
+            }
+            
+            if (accessoryCosmetic) {
+                html += `<span class="equipped-cosmetic accessory" style="font-size:20px;">${accessoryCosmetic.icon}</span>`;
+            }
+            
+            html += '</div>';
+            
+            document.getElementById('character-preview').innerHTML = html;
+            
+            // Update equipped list text
+            let equippedText = [];
+            if (hatCosmetic) equippedText.push(`Hat: ${hatCosmetic.name}`);
+            if (accessoryCosmetic) equippedText.push(`Accessory: ${accessoryCosmetic.name}`);
+            document.getElementById('equipped-cosmetics').innerText = 
+                equippedText.length > 0 ? equippedText.join(' • ') : 'No cosmetics equipped';
+        }
+       function updateCharacterDisplay() {
+    const charIcons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
+    const icon = charIcons[state.currentChar];
+    if (!icon) return;
+    
+    const equipped = storage.getEquippedCosmetics();
+    const cosmetics = storage.getCosmetics();
+    const hatCosmetic = cosmetics.find(c => c.id === equipped.hat);
+    const accessoryCosmetic = cosmetics.find(c => c.id === equipped.accessory);
+    
+    let characterDisplay = icon;
+    if (hatCosmetic || accessoryCosmetic) {
+        characterDisplay = '';
+        if (hatCosmetic) characterDisplay += hatCosmetic.icon;
+        characterDisplay += icon;
+        if (accessoryCosmetic) characterDisplay += accessoryCosmetic.icon;
+    }
+    
+    // Update walking character
+    const walkingChar = document.getElementById('walking-char');
+    if (walkingChar) walkingChar.innerText = characterDisplay;
+}
+
+function updateAllCharacterDisplays() {
+    const charIcons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
+    const equipped = storage.getEquippedCosmetics();
+    const cosmetics = storage.getCosmetics();
+    const hatCosmetic = cosmetics.find(c => c.id === equipped.hat);
+    
+    // Update each character display
+    Object.keys(charIcons).forEach(charName => {
+        const displayElement = document.getElementById(`char-display-${charName}`);
+        if (displayElement) {
+            let charDisplay = charIcons[charName];
+            if (hatCosmetic) {
+                charDisplay = hatCosmetic.icon + charIcons[charName];
+            }
+            displayElement.innerText = charDisplay;
+        }
+    });
+}
+        // ===== END OF NEW FUNCTION =====
+
+        function showLoginForm() {
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+            document.getElementById('login-message').style.display = 'none';
+        }
+
+        function showRegisterForm() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+            document.getElementById('login-message').style.display = 'none';
+        }
+
+        function handleLogin() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            const messageDiv = document.getElementById('login-message');
+            
+            if (!username || !password) {
+                messageDiv.style.display = 'block';
+                messageDiv.style.color = '#ff4444';
+                messageDiv.innerText = '⚠️ Please fill in all fields';
+                return;
+            }
+            
+            const account = storage.validateLogin(username, password);
+            if (!account) {
+                messageDiv.style.display = 'block';
+                messageDiv.style.color = '#ff4444';
+                messageDiv.innerText = '❌ Invalid username or password';
+                return;
+            }
+            
+            state.userName = username;
+            state.accountData = account;
+            messageDiv.style.display = 'block';
+            messageDiv.style.color = '#00ff88';
+            messageDiv.innerText = '✅ Welcome back, ' + username + '!';
+            
+            setTimeout(() => {
+                navigate('screen-daily');
+                updateDailyDashboard();
+                updateCoinDisplay();
+            }, 800);
+        }
+
+        function handleRegister() {
+            const username = document.getElementById('register-username').value.trim();
+            const password = document.getElementById('register-password').value.trim();
+            const confirm = document.getElementById('register-confirm').value.trim();
+            const messageDiv = document.getElementById('login-message');
+            
+            if (!username || !password || !confirm) {
+                messageDiv.style.display = 'block';
+                messageDiv.style.color = '#ff4444';
+                messageDiv.innerText = '⚠️ Please fill in all fields';
+                return;
+            }
+            
+            if (password !== confirm) {
+                messageDiv.style.display = 'block';
+                messageDiv.style.color = '#ff4444';
+                messageDiv.innerText = '❌ Passwords do not match';
+                return;
+            }
+            
+            if (password.length < 4) {
+                messageDiv.style.display = 'block';
+                messageDiv.style.color = '#ff4444';
+                messageDiv.innerText = '❌ Password must be at least 4 characters';
+                return;
+            }
+            
+            if (!storage.createAccount(username, password)) {
+                messageDiv.style.display = 'block';
+                messageDiv.style.color = '#ff4444';
+                messageDiv.innerText = '❌ Username already exists';
+                return;
+            }
+            
+            messageDiv.style.display = 'block';
+            messageDiv.style.color = '#00ff88';
+            messageDiv.innerText = '✅ Account created! You can now login.';
+            
+            setTimeout(() => {
+                showLoginForm();
+                document.getElementById('login-username').value = username;
+                document.getElementById('register-username').value = '';
+                document.getElementById('register-password').value = '';
+                document.getElementById('register-confirm').value = '';
+            }, 1500);
+        }
+
+        function updateDailyDashboard() {
+            const account = storage.getAccountData(state.userName);
+            if (!account) return;
+            
+            document.getElementById('streak-count').innerText = account.streak || 0;
+            document.getElementById('total-logins').innerText = account.totalLogins || 1;
+            
+            const task = storage.getDailyTask();
+            const today = new Date().toDateString();
+            const taskCompleted = account.lastTaskDate === today;
+            
+            const taskContent = document.getElementById('daily-task-content');
+            if (taskCompleted) {
+                taskContent.innerHTML = '<div style="text-align:center; padding:20px;"><div style="font-size:40px; margin-bottom:10px;">✅</div><div style="color:#00ff88; font-weight:800;">Task Completed!</div><div style="color:#999; font-size:11px; margin-top:5px;">Come back tomorrow for a new challenge</div></div>';
+            } else if (task.type === 'trivia') {
+                taskContent.innerHTML = `
+                    <div style="margin-bottom:10px; font-weight:600; font-size:13px;">${task.question}</div>
+                    <div id="task-options"></div>
+                    <div style="text-align:center; margin-top:10px; color:var(--np-orange); font-weight:800; font-size:12px;">🎁 Reward: ${task.reward} pts + ${Math.floor(task.reward/10)} 🪙</div>
+                `;
+                const optionsDiv = document.getElementById('task-options');
+                task.options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'option-btn';
+                    btn.style.padding = '10px';
+                    btn.style.fontSize = '12px';
+                    btn.innerText = opt;
+                    btn.onclick = () => checkDailyTask(opt, task.answer, task.reward, btn);
+                    optionsDiv.appendChild(btn);
+                });
+            }
+            
+            updateHeaderScore();
+            updateCoinDisplay();
+        }
+
+        function checkDailyTask(choice, answer, reward, button) {
+            if (choice === answer) {
+                button.classList.add('correct');
+                document.querySelectorAll('#task-options .option-btn').forEach(btn => btn.disabled = true);
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                if (!state.isMuted) audio.sfx.play().catch(e => console.log('SFX play failed:', e));
+                
+                if (storage.completeDailyTask('daily')) {
+                    const data = storage.getUserData();
+                    data.dailyTaskBonus = (data.dailyTaskBonus || 0) + reward;
+                    // Award coins for daily task (1 coin per 10 points)
+                    const coinsEarned = Math.floor(reward / 10);
+                    if (coinsEarned > 0) {
+                        storage.addCoins(coinsEarned);
+                    }
+                    storage.saveUserData(data);
+                    updateHeaderScore();
+                    updateCoinDisplay();
+                    
+                    setTimeout(() => {
+                        updateDailyDashboard();
+                    }, 1200);
+                }
+            } else {
+                button.classList.add('wrong');
+                button.disabled = true;
+            }
+        }
+
+      function enterApp() {
+    updateAllCharacterDisplays(); // Add this line
+    navigate('screen-character');
+}
+
+       function selectChar(name, icon, mode) {
+    const equipped = storage.getEquippedCosmetics();
+    const cosmetics = storage.getCosmetics();
+    
+    // Create character with cosmetics
+    let characterDisplay = icon;
+    const hatCosmetic = cosmetics.find(c => c.id === equipped.hat);
+    const accessoryCosmetic = cosmetics.find(c => c.id === equipped.accessory);
+    
+    // Build character string with cosmetics
+    if (hatCosmetic || accessoryCosmetic) {
+        characterDisplay = '';
+        if (hatCosmetic) characterDisplay += hatCosmetic.icon;
+        characterDisplay += icon;
+        if (accessoryCosmetic) characterDisplay += accessoryCosmetic.icon;
+    }
+    
+    document.getElementById('walking-char').innerText = characterDisplay;
+    state.currentMode = mode;
+    state.currentChar = name;
+    state.currentStage = 0;
+    audio.bgm.play().catch(e => console.log('Audio autoplay prevented:', e));
+    updateHeaderScore();
+    updateCoinDisplay();
+    updateCharacterDisplay(); // Update display everywhere
+    showClue();
+}
+
+       function startOppositeMode() {
+    const counterparts = { leo: 'sage', sage: 'leo', ollie: 'felix', felix: 'ollie', momo: 'sparky', sparky: 'momo' };
+    const newChar = counterparts[state.currentChar];
+    state.currentChar = newChar;
+    state.currentMode = state.currentMode === 'walking' ? 'digital' : 'walking';
+    state.currentStage = 0;
+    updateCharacterDisplay(); // Show character with cosmetics
+    showClue();
+}
+
+      function showClue() {
+    document.getElementById('map-bar').classList.remove('hidden');
+    const data = storyData[state.currentChar][state.currentStage];
+    
+    if (!data) return;
+
+    document.getElementById('clue-title').innerText = data.title;
+    const mediaBox = document.getElementById('clue-media');
+    const locationBox = document.getElementById('location-hint');
+
+    // Reset media box
+    mediaBox.innerHTML = '';
+    mediaBox.style.display = "none";
+
+    if (state.currentMode === 'walking') {
+        locationBox.style.display = "block";
+        document.getElementById('location-text').innerText = data.loc;
+        
+        // NEW: Show image if it exists in data
+        if (data.image) {
+            mediaBox.innerHTML = `<img src="${data.image}" alt="Clue Image" style="width:100%; height:100%; object-fit:cover;">`;
+            mediaBox.style.display = "block";
+        }
+  } else {
+    // Digital Trail Logic
+    locationBox.style.display = "none";
+    
+    // Prioritize video over image if both exist
+    if (data.media) {
+        mediaBox.innerHTML = data.media;
+        mediaBox.style.display = "block";
+    } else if (data.image) {
+        mediaBox.innerHTML = `<img src="${data.image}" alt="Clue Image" style="width:100%; height:100%; object-fit:cover;">`;
+        mediaBox.style.display = "block";
+    }
+}
+    document.getElementById('clue-quote').innerText = `${data.icon} ${data.exp}: "${data.fact}"`;
+    updateNodes();
+    navigate('screen-clue');
+}
 
         function showQuiz() {
             state.attemptsLeft = 3;
             state.quizAnswered = false;
             updateAttempts();
             const data = storyData[state.currentChar][state.currentStage];
-            document.getElementById('quiz-question').innerText = data.question;
+           const quizDiv = document.getElementById('quiz-question');
+quizDiv.innerHTML = ''; // Clear existing content
+
+if (data.image) {
+    const img = document.createElement('img');
+    img.src = data.image;
+    img.style.cssText = `
+        width: 100%; 
+        height: 150px; 
+        object-fit: cover; 
+        border-radius: 12px; 
+        margin-bottom: 10px; 
+        display: block;
+        border: 1px solid #00d4ff;
+    `;
+    quizDiv.appendChild(img);
+}
+quizDiv.innerHTML += `<br><strong>${data.question}</strong>`;
+
             const optionsContainer = document.getElementById('quiz-options');
             optionsContainer.innerHTML = "";
             data.options.forEach(option => {
@@ -572,6 +1572,7 @@
                 else points = Math.floor(baseScore / 4);
                 storage.saveScore(points);
                 updateHeaderScore();
+                updateCoinDisplay();
                 setTimeout(runTransition, 1200);
             } else {
                 button.classList.add('wrong');
@@ -605,7 +1606,7 @@
             const leaderboardList = document.getElementById('leaderboard-list');
             const users = storage.getAllUsers();
             if (users.length === 0) {
-                leaderboardList.innerHTML = '<div style="text-align:center; color:#888; padding:20px;">No players yet. Be the first!</div>';
+                leaderboardList.innerHTML = '<div style="text-align:center; color:#888; padding:20px; font-size:12px;">No players yet. Be the first!</div>';
                 return;
             }
             const top10 = users.slice(0, 10);
@@ -635,7 +1636,7 @@
             const feedbackData = {
                 user: state.userName,
                 feedback: feedbackText,
-                score: storage.getTotalScore().total,
+                score: storage.getTotalScore().total + (storage.getUserData().dailyTaskBonus || 0),
                 character: state.currentChar,
                 mode: state.currentMode,
                 timestamp: new Date().toISOString()
@@ -661,14 +1662,14 @@
             const feedbacks = JSON.parse(localStorage.getItem(feedbackKey) || '[]');
             const feedbackList = document.getElementById('feedback-list');
             if (feedbacks.length === 0) {
-                feedbackList.innerHTML = '<div style="text-align:center; color:#888; padding:40px;">No feedback yet. Be the first to share your thoughts!</div>';
+                feedbackList.innerHTML = '<div style="text-align:center; color:#888; padding:40px; font-size:12px;">No feedback yet. Be the first to share your thoughts!</div>';
             } else {
                 const characterIcons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
                 feedbackList.innerHTML = feedbacks.map((fb) => {
                     const date = new Date(fb.timestamp);
                     const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
                     const icon = characterIcons[fb.character] || '✨';
-                    return `<div style="background:rgba(0,0,0,0.3); border-radius:12px; padding:15px; margin-bottom:12px; text-align:left;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div><b style="color:var(--np-orange);">${icon} ${fb.user}</b><span style="color:#888; font-size:11px; margin-left:8px;">${formattedDate}</span></div><span style="color:#00ff88; font-size:11px; font-weight:800;">${fb.score} pts</span></div><p style="margin:0; color:#fff; font-size:13px; line-height:1.5; font-style:italic;">"${fb.feedback}"</p></div>`;
+                    return `<div style="background:rgba(0,0,0,0.3); border-radius:12px; padding:15px; margin-bottom:12px; text-align:left;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div><b style="color:var(--np-orange); font-size:13px;">${icon} ${fb.user}</b><span style="color:#888; font-size:10px; margin-left:8px;">${formattedDate}</span></div><span style="color:#00ff88; font-size:11px; font-weight:800;">${fb.score} pts</span></div><p style="margin:0; color:#fff; font-size:12px; line-height:1.5; font-style:italic;">"${fb.feedback}"</p></div>`;
                 }).reverse().join('');
             }
             navigate('screen-feedback');
@@ -686,9 +1687,11 @@
             ['sage', 'felix', 'sparky'].forEach(char => {
                 if (data[char]) Object.values(data[char]).forEach(score => digitalTotal += score);
             });
+            const dailyBonus = data.dailyTaskBonus || 0;
             document.getElementById('res-walking').innerText = walkingTotal;
             document.getElementById('res-digital').innerText = digitalTotal;
-            document.getElementById('res-total').innerText = `${scores.total} pts`;
+            document.getElementById('res-daily').innerText = dailyBonus;
+            document.getElementById('res-total').innerText = `${scores.total + dailyBonus} pts`;
             const switchButton = document.getElementById('switch-btn');
             switchButton.innerText = state.currentMode === 'walking' ? "TRY DIGITAL TRAIL" : "TRY WALKING TRAIL";
             updateLeaderboard();
@@ -709,18 +1712,61 @@
 
         function updateHeaderScore() {
             const scores = storage.getTotalScore();
-            document.getElementById('header-score').innerText = `PTS: ${scores.total}`;
+            const data = storage.getUserData();
+            const bonus = data.dailyTaskBonus || 0;
+            document.getElementById('header-score').innerText = `PTS: ${scores.total + bonus}`;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('mute-btn').addEventListener('click', toggleMute);
-            document.getElementById('start-btn').addEventListener('click', enterApp);
+           document.getElementById('shop-btn').addEventListener('click', () => {
+    updateCoinDisplay();
+    updateCosmeticsList();
+    showCosmeticPreview('hats'); // Show hats by default
+    navigate('screen-shop');
+});
+          document.getElementById('back-from-shop-btn').addEventListener('click', () => {
+    if (state.userName) {
+        navigate('screen-daily');
+    } else {
+        navigate('screen-start');
+    }
+});
+document.getElementById('preview-hats-btn').addEventListener('click', () => showCosmeticPreview('hats'));
+document.getElementById('preview-accessories-btn').addEventListener('click', () => showCosmeticPreview('accessories'));
+document.getElementById('gacha-normal').addEventListener('click', () => rollGacha('normal'));
+            document.getElementById('gacha-premium').addEventListener('click', () => rollGacha('premium'));
+            document.getElementById('login-btn').addEventListener('click', handleLogin);
+            document.getElementById('register-btn').addEventListener('click', handleRegister);
+            document.getElementById('show-register-btn').addEventListener('click', showRegisterForm);
+            document.getElementById('show-login-btn').addEventListener('click', showLoginForm);
+            document.getElementById('start-journey-btn').addEventListener('click', enterApp);
             document.getElementById('ready-btn').addEventListener('click', showQuiz);
             document.getElementById('submit-feedback-btn').addEventListener('click', submitFeedback);
             document.getElementById('view-feedback-btn').addEventListener('click', viewAllFeedback);
             document.getElementById('switch-btn').addEventListener('click', startOppositeMode);
-            document.getElementById('restart-btn').addEventListener('click', () => location.reload());
+            document.getElementById('restart-btn').addEventListener('click', () => {
+             // Reset journey state but keep user logged in
+            state.currentMode = "";
+            state.currentChar = "";
+            state.currentStage = 0;
+            state.attemptsLeft = 3;
+            state.quizAnswered = false;
+            navigate('screen-daily');
+            updateDailyDashboard();
+             });
             document.getElementById('back-to-finish').addEventListener('click', () => navigate('screen-finish'));
+            
+            document.getElementById('login-username').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleLogin();
+            });
+            document.getElementById('login-password').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleLogin();
+            });
+            document.getElementById('register-confirm').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') handleRegister();
+            });
+            
             document.querySelectorAll('.char-card').forEach(card => {
                 card.addEventListener('click', (e) => {
                     const name = e.currentTarget.dataset.char;
