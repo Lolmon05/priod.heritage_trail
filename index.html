@@ -654,7 +654,7 @@
                  exp: "Leo", 
                  icon: "🦁", 
                  fact: "Hi, I'm Leo the Lion! 🦁 Let's explore NP's history. See this massive campus? In 1963, we weren't here at Clementi Road we started at Tank Road! Want to see how it looked? Complete the puzzle to reveal our origins.", 
-                 loc: "Find the Founding Plaque near Block 1 Main Entrance!"},
+                 loc: "Find the touchscreen to the right of staircase on level 5!"},
 
                 { title: "NP History - Stage 2",
                  question: "When did NP move to Clementi campus?", 
@@ -715,7 +715,7 @@
                    exp: "Ollie", 
                    icon: "🦦", 
                    fact: "NP was established in the early 1960s by a community organisation rooted in Teochew heritage, with a strong focus on education and culture.", 
-                   loc: "Visit the Library Level 4 Heritage Wall to learn more about our founding!" },
+                   loc: "Visit the Library Level 4 touchscreen near the window!" },
 
                 { title: "NP Founders - Stage 2",
                  question: "What community does Ngee Ann Kongsi represent?",  
@@ -777,7 +777,7 @@
                   exp: "Momo", 
                   icon: "🐒", 
                   fact: "An NP alumnus from the Film, Sound & Video programme made waves internationally, winning a top award at Cannes in 2013 for his debut feature.", 
-                  loc: "Check out the Alumni Success Wall at Block 52 to see more inspiring NP graduates!" },
+                  loc: "Check out the Alumni Success Wall at Level 3 to see more inspiring NP graduates!" },
 
                 { title: "Famous Alumni - Stage 2", 
                 question: "Which NP school did Anthony Chen graduate from?",  
@@ -897,7 +897,7 @@
             },
            getCoins: () => {
     const data = storage.getUserData();
-    // Give 1000 starting coins if coins haven't been set yet
+    // Give 500 starting coins if coins haven't been set yet
     if (data.coins === undefined) {
         data.coins = 500;
         storage.saveUserData(data);
@@ -1314,9 +1314,10 @@ function updateAllCharacterDisplays() {
             
             state.userName = username;
             state.accountData = account;
-            messageDiv.style.display = 'block';
-            messageDiv.style.color = '#00ff88';
-            messageDiv.innerText = '✅ Welcome back, ' + username + '!';
+           messageDiv.style.display = 'block';
+messageDiv.style.color = '#00ff88';
+messageDiv.innerText = `Welcome back, ${username}! Your streak: ${account.streak || 0} days`;
+
             
             setTimeout(() => {
                 navigate('screen-daily');
@@ -1378,14 +1379,15 @@ function updateAllCharacterDisplays() {
             
             document.getElementById('streak-count').innerText = account.streak || 0;
             document.getElementById('total-logins').innerText = account.totalLogins || 1;
+            document.querySelector('#screen-daily .card h2').innerText = `Daily Dashboard, ${state.userName}`;
             
             const task = storage.getDailyTask();
             const today = new Date().toDateString();
             const taskCompleted = account.lastTaskDate === today;
             
             const taskContent = document.getElementById('daily-task-content');
-            if (taskCompleted) {
-                taskContent.innerHTML = '<div style="text-align:center; padding:20px;"><div style="font-size:40px; margin-bottom:10px;">✅</div><div style="color:#00ff88; font-weight:800;">Task Completed!</div><div style="color:#999; font-size:11px; margin-top:5px;">Come back tomorrow for a new challenge</div></div>';
+           if (taskCompleted) {
+            taskContent.innerHTML = `<div style="text-align:center; padding:20px;"><div style="font-size:40px; margin-bottom:10px;">✅</div><div style="color:#00ff88; font-weight:800;">Task Completed, ${state.userName}!</div><div style="color:#999; font-size:11px; margin-top:5px;">Come back tomorrow</div></div>`;
             } else if (task.type === 'trivia') {
                 taskContent.innerHTML = `
                     <div style="margin-bottom:10px; font-weight:600; font-size:13px;">${task.question}</div>
@@ -1773,6 +1775,10 @@ document.getElementById('gacha-normal').addEventListener('click', () => rollGach
                     const icon = e.currentTarget.dataset.icon;
                     const mode = e.currentTarget.dataset.mode;
                     selectChar(name, icon, mode);
+                    const userScores = storage.getUserData();
+const pastScore = userScores[name] ? Object.values(userScores[name])[0] || 0 : 0;
+alert(`${name} suits you! Last score: ${pastScore} pts`);
+
                 });
             });
         });
