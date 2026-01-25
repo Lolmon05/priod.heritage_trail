@@ -119,6 +119,64 @@
         .tag-walk { background: #00ff88; color: #000; }
         .tag-digi { background: #00d4ff; color: #000; }
 
+        .lock-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            border-radius: 15px;
+            cursor: not-allowed;
+        }
+
+        .char-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quiz-question-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .quiz-question-container h4 {
+            margin: 0 0 15px 0;
+            color: var(--np-orange);
+            font-size: 14px;
+        }
+
+        .quiz-option {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: var(--np-orange);
+        }
+
+        .quiz-option.selected {
+            background: rgba(255,107,0,0.2);
+            border-color: var(--np-orange);
+        }
+
+        .quiz-option-icon {
+            font-size: 20px;
+        }
+
         .media-box { 
             width: 100%; border-radius: 12px; overflow: hidden; 
             margin-bottom: 12px; background: #000; border: 1px solid #00d4ff; 
@@ -238,7 +296,6 @@
             color: #00ff88;
         }
 
-        /* Gacha System Styles */
         .gacha-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -381,7 +438,6 @@
             <button class="audio-toggle" id="mute-btn">🔊</button>
             <div class="crest-container">
                <img src="https://sifma.org.sg/media/ax0pg51v/np_logo_full_colour_vertical.jpg" alt="NP Logo">
-
             </div>
             <h1 style="margin:0; font-size: 16px; letter-spacing: 1px;">MEMORY TRAIL</h1>
         </header>
@@ -391,7 +447,6 @@
             <div class="node" id="n1"></div>
             <div class="node" id="n2"></div>
         </div>
-
         <div id="screen-start" class="screen active">
             <div class="card">
                 <h2 style="margin-top:0;">WELCOME</h2>
@@ -441,39 +496,65 @@
             </div>
         </div>
 
+        <div id="screen-quiz-intro" class="screen">
+            <div class="card">
+                <h2 style="margin:0 0 15px 0;">🔮 DISCOVER YOUR PATH</h2>
+                <p style="font-size:13px; color:#999; margin-bottom:20px;">Answer these questions to find out which trail suits you best!</p>
+                <div id="personality-quiz"></div>
+                <div id="quiz-result" style="display:none; margin-top:20px;">
+                    <div style="background:rgba(255,107,0,0.1); border:1px solid var(--np-orange); border-radius:12px; padding:20px; text-align:center;">
+                        <div id="result-icon" style="font-size:48px; margin-bottom:10px;"></div>
+                        <h3 id="result-title" style="margin:10px 0; color:var(--np-orange);"></h3>
+                        <p id="result-desc" style="font-size:12px; color:#ccc; margin-bottom:15px;"></p>
+                        <button class="btn-action" id="start-recommended-trail">START YOUR TRAIL</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="screen-character" class="screen">
             <div class="card">
-                <h3 style="margin:0;">CHOOSE YOUR GUIDE</h3>
+                <h3 style="margin:0 0 15px 0;">CHOOSE YOUR GUIDE</h3>
+                <div id="trail-unlock-message" style="background:rgba(255,107,0,0.1); border:1px solid var(--np-orange); border-radius:12px; padding:15px; margin-bottom:15px; font-size:12px; text-align:center; display:none;">
+                    <div style="font-size:24px; margin-bottom:8px;">🔒</div>
+                    <p style="margin:0; color:#ffaa00;">Complete your recommended trail to unlock all trails!</p>
+                </div>
                 
-              <div class="topic-label">1. NP History</div>
-<div class="char-grid">
-    <div class="char-card" data-char="leo" data-icon="🦁" data-mode="walking">
-        <span id="char-display-leo">🦁</span><b>Leo</b><span class="tag tag-walk">Walking Trail</span>
-    </div>
-    <div class="char-card" data-char="sage" data-icon="🦉" data-mode="digital">
-        <span id="char-display-sage">🦉</span><b>Sage</b><span class="tag tag-digi">Digital Trail</span>
-    </div>
-</div>
+                <div class="topic-label">1. NP History</div>
+                <div class="char-grid">
+                    <div class="char-card" data-char="leo" data-icon="🦁" data-mode="walking" data-topic="history">
+                        <span id="char-display-leo">🦁</span><b>Leo</b><span class="tag tag-walk">Walking Trail</span>
+                        <div class="lock-overlay" style="display:none;">🔒</div>
+                    </div>
+                    <div class="char-card" data-char="sage" data-icon="🦉" data-mode="digital" data-topic="history">
+                        <span id="char-display-sage">🦉</span><b>Sage</b><span class="tag tag-digi">Digital Trail</span>
+                        <div class="lock-overlay" style="display:none;">🔒</div>
+                    </div>
+                </div>
 
-<div class="topic-label">2. NP Founders</div>
-<div class="char-grid">
-    <div class="char-card" data-char="ollie" data-icon="🦦" data-mode="walking">
-        <span id="char-display-ollie">🦦</span><b>Ollie</b><span class="tag tag-walk">Walking Trail</span>
-    </div>
-    <div class="char-card" data-char="felix" data-icon="🐱" data-mode="digital">
-        <span id="char-display-felix">🐱</span><b>Felix</b><span class="tag tag-digi">Digital Trail</span>
-    </div>
-</div>
+                <div class="topic-label">2. NP Founders</div>
+                <div class="char-grid">
+                    <div class="char-card" data-char="ollie" data-icon="🦦" data-mode="walking" data-topic="founders">
+                        <span id="char-display-ollie">🦦</span><b>Ollie</b><span class="tag tag-walk">Walking Trail</span>
+                        <div class="lock-overlay" style="display:none;">🔒</div>
+                    </div>
+                    <div class="char-card" data-char="felix" data-icon="🐱" data-mode="digital" data-topic="founders">
+                        <span id="char-display-felix">🐱</span><b>Felix</b><span class="tag tag-digi">Digital Trail</span>
+                        <div class="lock-overlay" style="display:none;">🔒</div>
+                    </div>
+                </div>
 
-<div class="topic-label">3. Famous Alumni</div>
-<div class="char-grid">
-    <div class="char-card" data-char="momo" data-icon="🐒" data-mode="walking">
-        <span id="char-display-momo">🐒</span><b>Momo</b><span class="tag tag-walk">Walking Trail</span>
-    </div>
-    <div class="char-card" data-char="sparky" data-icon="🐿️" data-mode="digital">
-        <span id="char-display-sparky">🐿️</span><b>Sparky</b><span class="tag tag-digi">Digital Trail</span>
-    </div>
-</div>
+                <div class="topic-label">3. Famous Alumni</div>
+                <div class="char-grid">
+                    <div class="char-card" data-char="momo" data-icon="🐒" data-mode="walking" data-topic="alumni">
+                        <span id="char-display-momo">🐒</span><b>Momo</b><span class="tag tag-walk">Walking Trail</span>
+                        <div class="lock-overlay" style="display:none;">🔒</div>
+                    </div>
+                    <div class="char-card" data-char="sparky" data-icon="🐿️" data-mode="digital" data-topic="alumni">
+                        <span id="char-display-sparky">🐿️</span><b>Sparky</b><span class="tag tag-digi">Digital Trail</span>
+                        <div class="lock-overlay" style="display:none;">🔒</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -508,7 +589,7 @@
                 </div>
 
                 <h3 style="margin:15px 0 10px 0; font-size:14px; color:var(--np-orange);">🎰 GACHA SYSTEM</h3>
-               <div class="gacha-container">
+                <div class="gacha-container">
                     <div class="gacha-box" id="gacha-normal" data-cost="100">
                         <div style="font-size:32px;">📦</div>
                         <div style="font-weight:800; margin:5px 0;">Normal Gacha</div>
@@ -606,7 +687,9 @@
             isMuted: false,
             quizAnswered: false,
             dailyTaskCompleted: false,
-            accountData: null
+            accountData: null,
+            recommendedMode: "",
+            quizAnswers: []
         };
 
         const audio = {
@@ -644,6 +727,45 @@
             premium: { rare: 0, epic: 40, legendary: 45, mythic: 15 }
         };
 
+        // Personality Quiz
+        const personalityQuiz = [
+            {
+                question: "How do you prefer to learn about new things?",
+                options: [
+                    { text: "By doing hands-on activities and exploring", icon: "🚶", value: "walking" },
+                    { text: "By watching videos and reading online", icon: "💻", value: "digital" }
+                ]
+            },
+            {
+                question: "When visiting a museum, you would rather:",
+                options: [
+                    { text: "Walk around and discover exhibits yourself", icon: "🗺️", value: "walking" },
+                    { text: "Use an audio guide or app for information", icon: "📱", value: "digital" }
+                ]
+            },
+            {
+                question: "Your ideal weekend activity is:",
+                options: [
+                    { text: "Going on an outdoor adventure or heritage trail", icon: "🏃", value: "walking" },
+                    { text: "Exploring documentaries or virtual tours", icon: "🎬", value: "digital" }
+                ]
+            },
+            {
+                question: "How do you remember information best?",
+                options: [
+                    { text: "By physically being there and experiencing it", icon: "👀", value: "walking" },
+                    { text: "By seeing visuals, videos, and multimedia", icon: "📺", value: "digital" }
+                ]
+            },
+            {
+                question: "When learning about history, you prefer:",
+                options: [
+                    { text: "Visiting actual historical locations", icon: "🏛️", value: "walking" },
+                    { text: "Interactive digital content and videos", icon: "🖥️", value: "digital" }
+                ]
+            }
+        ];
+
         const storyData = {
             leo: [
                 { title: "NP History - Stage 1",
@@ -673,7 +795,7 @@
                  answer: "Ngee Ann Polytechnic", 
                  exp: "Leo", 
                  icon: "🦁", 
-                 fact: "The name “Ngee Ann” carries a Teochew meaning that embodies moral excellence and strong values.", 
+                 fact: "The name Ngee Ann carries a Teochew meaning that embodies moral excellence and strong values.", 
                  loc: "Check out the Heritage Corner at Block 83 to learn more about our name!" }
             ],
             sage: [
@@ -703,7 +825,7 @@
                  answer: "Best of Righteousness", 
                  exp: "Sage", 
                  icon: "🦉", 
-                 fact: "The name “Ngee Ann” comes from Teochew roots and carries ideals tied to strong moral character.", 
+                 fact: "The name Ngee Ann comes from Teochew roots and carries ideals tied to strong moral character.", 
                   }
             ],
             ollie: [
@@ -734,7 +856,7 @@
                   answer: "Quality education for all",
                    exp: "Ollie", 
                    icon: "🦦", 
-                   fact: "NP’s beginnings were guided by a vision to open pathways of practical learning for young people.",
+                   fact: "NP's beginnings were guided by a vision to open pathways of practical learning for young people.",
                     loc: "Read the Mission Statement plaque at the Main Entrance!" }
             ],
             felix: [
@@ -765,7 +887,7 @@
                   answer: "2", 
                   exp: "Felix",
                   icon: "🐱", 
-                  fact: "Following the establishment of the nation’s first polytechnic, NP opened its doors as the second of its kind.",
+                  fact: "Following the establishment of the nation's first polytechnic, NP opened its doors as the second of its kind.",
                    }
             ],
             momo: [
@@ -799,9 +921,8 @@
                 fact: "From innovation to the arts, NP alumni are making waves across multiple sectors.",
                  loc: "Browse the Alumni Achievement Gallery at Block 1 Level 3!" }
             ],
-          sparky: [
-   
-    { 
+            sparky: [
+                { 
                  title: "Famous Alumni - Stage 1", 
                  question: "Which award did Anthony Chen win at Cannes?",  
                  image: "https://cdn.i-scmp.com/sites/default/files/styles/1020x680/public/2013/11/15/cbed19ad66bf7ebac2dbf57f3dc633d8.jpg?itok=Azo7dCuy",
@@ -811,7 +932,7 @@
                  icon: "🐿️", 
                  fact: "An NP Film graduate gained international acclaim at Cannes with a historic win.", 
                  media: '<iframe width="560" height="315" src="https://www.youtube.com/embed/P5m4GFLZDaA?si=5B0p6AtljR5LzNBK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>' 
-    },
+                },
                 { title: "Famous Alumni - Stage 2", 
                 question: "What is the title of Anthony Chen's award-winning film?", 
                 image: "https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p10004403_p_v10_ac.jpg", 
@@ -896,14 +1017,13 @@
                 return data ? JSON.parse(data) : null;
             },
            getCoins: () => {
-    const data = storage.getUserData();
-    // Give 500 starting coins if coins haven't been set yet
-    if (data.coins === undefined) {
-        data.coins = 500;
-        storage.saveUserData(data);
-    }
-    return data.coins || 1000;
-},
+                const data = storage.getUserData();
+                if (data.coins === undefined) {
+                    data.coins = 500;
+                    storage.saveUserData(data);
+                }
+                return data.coins || 500;
+            },
             addCoins: (amount) => {
                 const data = storage.getUserData();
                 data.coins = (data.coins || 0) + amount;
@@ -927,7 +1047,6 @@
             addCosmetic: (cosmetic) => {
                 const data = storage.getUserData();
                 if (!data.cosmetics) data.cosmetics = [];
-                // Check if already owned
                 if (!data.cosmetics.find(c => c.id === cosmetic.id)) {
                     data.cosmetics.push(cosmetic);
                     storage.saveUserData(data);
@@ -958,7 +1077,6 @@
                 const currentScore = data[charKey][state.currentStage] || 0;
                 if (points > currentScore) {
                     data[charKey][state.currentStage] = points;
-                    // Award coins based on points earned (1 coin per 10 points)
                     const coinsEarned = Math.floor(points / 10);
                     if (coinsEarned > 0) {
                         data.coins = (data.coins || 0) + coinsEarned;
@@ -1026,6 +1144,30 @@
                     }
                 }
                 return users.sort((a, b) => b.total - a.total);
+            },
+            hasCompletedRecommendedTrail: () => {
+                const data = storage.getUserData();
+                if (!data.recommendedMode) return true;
+                
+                const recommendedChars = data.recommendedMode === 'walking' 
+                    ? ['leo', 'ollie', 'momo'] 
+                    : ['sage', 'felix', 'sparky'];
+                
+                for (let char of recommendedChars) {
+                    if (data[char] && Object.keys(data[char]).length === 3) {
+                        return true;
+                    }
+                }
+                return false;
+            },
+            setRecommendedMode: (mode) => {
+                const data = storage.getUserData();
+                data.recommendedMode = mode;
+                storage.saveUserData(data);
+            },
+            getRecommendedMode: () => {
+                const data = storage.getUserData();
+                return data.recommendedMode || null;
             }
         };
 
@@ -1035,150 +1177,227 @@
             if (target) target.classList.add('active');
         }
 
-        function toggleMute() {
-            state.isMuted = !state.isMuted;
-            audio.bgm.muted = state.isMuted;
-            document.getElementById('mute-btn').innerText = state.isMuted ? "🔇" : "🔊";
+      function toggleMute() {
+    state.isMuted = !state.isMuted;
+    audio.bgm.muted = state.isMuted;
+    document.getElementById('mute-btn').innerText = state.isMuted ? "🔇" : "🔊";
+}
+
+function updateCoinDisplay() {
+    const coins = storage.getCoins();
+    document.getElementById('header-coins').innerText = `🪙 ${coins}`;
+    const shopCoins = document.getElementById('shop-coins-display');
+    if (shopCoins) shopCoins.innerText = `🪙 ${coins}`;
+    
+    const normalGacha = document.getElementById('gacha-normal');
+    const premiumGacha = document.getElementById('gacha-premium');
+    
+    if (normalGacha && coins < 100) {
+        normalGacha.classList.add('disabled');
+    } else if (normalGacha) {
+        normalGacha.classList.remove('disabled');
+    }
+    
+    if (premiumGacha && coins < 300) {
+        premiumGacha.classList.add('disabled');
+    } else if (premiumGacha) {
+        premiumGacha.classList.remove('disabled');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('mute-btn').addEventListener('click', toggleMute);
+    document.getElementById('login-btn').addEventListener('click', handleLogin);
+    document.getElementById('register-btn').addEventListener('click', handleRegister);
+    document.getElementById('show-register-btn').addEventListener('click', showRegisterForm);
+    document.getElementById('show-login-btn').addEventListener('click', showLoginForm);
+    document.getElementById('start-journey-btn').addEventListener('click', enterApp);
+    document.getElementById('start-recommended-trail').addEventListener('click', () => {
+        updateCharacterLocks();
+        navigate('screen-character');
+    });
+    document.getElementById('ready-btn').addEventListener('click', showQuiz);
+    document.getElementById('restart-btn').addEventListener('click', () => {
+        state.currentStage = 0;
+        state.currentMode = '';
+        state.currentChar = '';
+        updateCharacterLocks();
+        navigate('screen-character');
+    });
+    document.getElementById('switch-btn').addEventListener('click', startOppositeMode);
+    document.getElementById('shop-btn').addEventListener('click', () => {
+        updateCoinDisplay();
+        updateCosmeticsList();
+        updateCharacterPreview();
+        navigate('screen-shop');
+    });
+    document.getElementById('back-from-shop-btn').addEventListener('click', () => {
+        navigate('screen-finish');
+    });
+    document.getElementById('gacha-normal').addEventListener('click', () => rollGacha('normal'));
+    document.getElementById('gacha-premium').addEventListener('click', () => rollGacha('premium'));
+    document.getElementById('preview-hats-btn').addEventListener('click', () => showCosmeticPreview('hats'));
+    document.getElementById('preview-accessories-btn').addEventListener('click', () => showCosmeticPreview('accessories'));
+    document.getElementById('submit-feedback-btn').addEventListener('click', submitFeedback);
+    document.getElementById('view-feedback-btn').addEventListener('click', viewFeedback);
+    document.getElementById('back-to-finish').addEventListener('click', () => navigate('screen-finish'));
+
+    document.querySelectorAll('.char-card').forEach(card => {
+        card.addEventListener('click', () => {
+            if (card.classList.contains('locked')) return;
+            const char = card.dataset.char;
+            const icon = card.dataset.icon;
+            const mode = card.dataset.mode;
+            selectChar(char, icon, mode);
+        });
+    });
+
+    // Login inputs - Enter key support
+    document.getElementById('login-username').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleLogin();
+    });
+    document.getElementById('login-password').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleLogin();
+    });
+    document.getElementById('register-username').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleRegister();
+    });
+    document.getElementById('register-password').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleRegister();
+    });
+    document.getElementById('register-confirm').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleRegister();
+    });
+
+    // Initialize
+    updateCoinDisplay();
+});
+
+// ALL FUNCTIONS BELOW ARE OUTSIDE DOMContentLoaded
+function rollGacha(type) {
+        const cost = parseInt(document.getElementById(`gacha-${type}`).dataset.cost);
+        const coins = storage.getCoins();
+        
+        if (coins < cost) {
+            alert(`Not enough coins! You need ${cost} coins.`);
+            return;
         }
 
-        function updateCoinDisplay() {
-            const coins = storage.getCoins();
-            document.getElementById('header-coins').innerHTML = `🪙 ${coins}`;
-            const shopCoins = document.getElementById('shop-coins-display');
-            if (shopCoins) shopCoins.innerHTML = `🪙 ${coins}`;
+        if (!storage.spendCoins(cost)) return;
+
+        const rates = gachaRates[type];
+        const roll = Math.random() * 100;
+        let rarity = 'rare';
+        
+        if (type === 'normal') {
+            if (roll <= rates.mythic) rarity = 'mythic';
+            else if (roll <= rates.mythic + rates.legendary) rarity = 'legendary';
+            else if (roll <= rates.mythic + rates.legendary + rates.epic) rarity = 'epic';
+            else rarity = 'rare';
+        } else {
+            if (roll <= rates.mythic) rarity = 'mythic';
+            else if (roll <= rates.mythic + rates.legendary) rarity = 'legendary';
+            else rarity = 'epic';
         }
 
-        function rollGacha(type) {
-            const cost = parseInt(document.getElementById(`gacha-${type}`).dataset.cost);
-            const coins = storage.getCoins();
-            
-            if (coins < cost) {
-                alert(`Not enough coins! You need ${cost} coins.`);
-                return;
-            }
+        const allItems = [...cosmeticDatabase.hats, ...cosmeticDatabase.accessories];
+        const itemsOfRarity = allItems.filter(item => item.rarity === rarity);
+        const randomItem = itemsOfRarity[Math.floor(Math.random() * itemsOfRarity.length)];
 
-            if (!storage.spendCoins(cost)) return;
+        const isNew = storage.addCosmetic(randomItem);
+        
+        showGachaResult(randomItem, isNew);
+        
+        if (document.getElementById('screen-shop').classList.contains('active')) {
+            updateCosmeticsList();
+        }
 
-            const rates = gachaRates[type];
-            const roll = Math.random() * 100;
-            let rarity = 'rare';
-            
-            if (type === 'normal') {
-                if (roll <= rates.mythic) rarity = 'mythic';
-                else if (roll <= rates.mythic + rates.legendary) rarity = 'legendary';
-                else if (roll <= rates.mythic + rates.legendary + rates.epic) rarity = 'epic';
-                else rarity = 'rare';
-            } else {
-                if (roll <= rates.mythic) rarity = 'mythic';
-                else if (roll <= rates.mythic + rates.legendary) rarity = 'legendary';
-                else rarity = 'epic';
-            }
+        if (!state.isMuted) audio.sfx.play().catch(e => console.log('SFX play failed:', e));
+        
+        const confettiColors = {
+            rare: ['#4dabf7'],
+            epic: ['#ae3ec9'],
+            legendary: ['#f59f00', '#ffd700'],
+            mythic: ['#ff0080', '#ff1493', '#ff69b4']
+        };
+        confetti({ 
+            particleCount: rarity === 'mythic' ? 200 : rarity === 'legendary' ? 150 : 100, 
+            spread: 70, 
+            origin: { y: 0.6 },
+            colors: confettiColors[rarity]
+        });
+    }
 
-            // Get all items of this rarity
-            const allItems = [...cosmeticDatabase.hats, ...cosmeticDatabase.accessories];
-            const itemsOfRarity = allItems.filter(item => item.rarity === rarity);
-            const randomItem = itemsOfRarity[Math.floor(Math.random() * itemsOfRarity.length)];
+    function showGachaResult(item, isNew) {
+        const resultDiv = document.getElementById('gacha-result');
+        const iconDiv = document.getElementById('gacha-result-icon');
+        const nameDiv = document.getElementById('gacha-result-name');
+        const rarityDiv = document.getElementById('gacha-result-rarity');
 
-            // Add to inventory
-            const isNew = storage.addCosmetic(randomItem);
-            
-            // Show result
-            showGachaResult(randomItem, isNew);
-            
-            // Update cosmetics list
-            if (document.getElementById('screen-shop').classList.contains('active')) {
-                updateCosmeticsList();
-            }
+        iconDiv.innerText = item.icon;
+        nameDiv.innerText = item.name;
+        rarityDiv.innerHTML = `<span class="rarity-badge rarity-${item.rarity}">${item.rarity.toUpperCase()}</span> ${isNew ? '<span style="color:#00ff88;">✨ NEW!</span>' : '<span style="color:#999;">(Already Owned)</span>'}`;
+        
+        resultDiv.classList.add('active');
+        resultDiv.className = `gacha-result active ${item.rarity}`;
+        
+        setTimeout(() => {
+            resultDiv.classList.remove('active');
+        }, 3000);
+    }
 
-            // Play sound
-            if (!state.isMuted) audio.sfx.play().catch(e => console.log('SFX play failed:', e));
-            
-            // Confetti based on rarity
-            const confettiColors = {
-                rare: ['#4dabf7'],
-                epic: ['#ae3ec9'],
-                legendary: ['#f59f00', '#ffd700'],
-                mythic: ['#ff0080', '#ff1493', '#ff69b4']
-            };
-            confetti({ 
-                particleCount: rarity === 'mythic' ? 200 : rarity === 'legendary' ? 150 : 100, 
-                spread: 70, 
-                origin: { y: 0.6 },
-                colors: confettiColors[rarity]
+    function updateCosmeticsList() {
+        const cosmetics = storage.getCosmetics();
+        const listDiv = document.getElementById('cosmetics-list');
+        const equipped = storage.getEquippedCosmetics();
+
+        if (cosmetics.length === 0) {
+            listDiv.innerHTML = '<div style="text-align:center; color:#999; padding:20px; font-size:12px;">No cosmetics yet. Try the gacha!</div>';
+            return;
+        }
+
+        const hats = cosmetics.filter(c => c.type === 'hat');
+        const accessories = cosmetics.filter(c => c.type === 'accessory');
+
+        let html = '';
+        
+        if (hats.length > 0) {
+            html += '<div style="margin-bottom:15px;"><div style="font-size:11px; color:#999; margin-bottom:8px; text-transform:uppercase;">Hats</div>';
+            hats.forEach(cosmetic => {
+                const isEquipped = equipped.hat === cosmetic.id;
+                html += `
+                    <div class="cosmetic-item ${cosmetic.rarity}" style="${isEquipped ? 'border-color:var(--np-orange); background:rgba(255,107,0,0.1);' : ''}">
+                        <div class="cosmetic-icon">${cosmetic.icon}</div>
+                        <div class="cosmetic-info">
+                            <div class="cosmetic-name">${cosmetic.name}</div>
+                            <span class="rarity-badge rarity-${cosmetic.rarity}">${cosmetic.rarity.toUpperCase()}</span>
+                        </div>
+                        <button class="btn-action" style="padding:8px 15px; font-size:11px; width:auto; margin:0;" onclick="equipCosmetic('${cosmetic.id}', 'hat')">${isEquipped ? '✓ Equipped' : 'Equip'}</button>
+                    </div>
+                `;
             });
+            html += '</div>';
         }
 
-        function showGachaResult(item, isNew) {
-            const resultDiv = document.getElementById('gacha-result');
-            const iconDiv = document.getElementById('gacha-result-icon');
-            const nameDiv = document.getElementById('gacha-result-name');
-            const rarityDiv = document.getElementById('gacha-result-rarity');
-
-            iconDiv.innerText = item.icon;
-            nameDiv.innerText = item.name;
-            rarityDiv.innerHTML = `<span class="rarity-badge rarity-${item.rarity}">${item.rarity.toUpperCase()}</span> ${isNew ? '<span style="color:#00ff88;">✨ NEW!</span>' : '<span style="color:#999;">(Already Owned)</span>'}`;
-            
-            resultDiv.classList.add('active');
-            resultDiv.className = `gacha-result active ${item.rarity}`;
-            
-            setTimeout(() => {
-                resultDiv.classList.remove('active');
-            }, 3000);
+        if (accessories.length > 0) {
+            html += '<div><div style="font-size:11px; color:#999; margin-bottom:8px; text-transform:uppercase;">Accessories</div>';
+            accessories.forEach(cosmetic => {
+                const isEquipped = equipped.accessory === cosmetic.id;
+                html += `
+                    <div class="cosmetic-item ${cosmetic.rarity}" style="${isEquipped ? 'border-color:var(--np-orange); background:rgba(255,107,0,0.1);' : ''}">
+                        <div class="cosmetic-icon">${cosmetic.icon}</div>
+                        <div class="cosmetic-info">
+                            <div class="cosmetic-name">${cosmetic.name}</div>
+                            <span class="rarity-badge rarity-${cosmetic.rarity}">${cosmetic.rarity.toUpperCase()}</span>
+                        </div>
+                        <button class="btn-action" style="padding:8px 15px; font-size:11px; width:auto; margin:0;" onclick="equipCosmetic('${cosmetic.id}', 'accessory')">${isEquipped ? '✓ Equipped' : 'Equip'}</button>
+                    </div>
+                `;
+            });
+            html += '</div>';
         }
 
-        function updateCosmeticsList() {
-            const cosmetics = storage.getCosmetics();
-            const listDiv = document.getElementById('cosmetics-list');
-            const equipped = storage.getEquippedCosmetics();
-
-            if (cosmetics.length === 0) {
-                listDiv.innerHTML = '<div style="text-align:center; color:#999; padding:20px; font-size:12px;">No cosmetics yet. Try the gacha!</div>';
-                return;
-            }
-
-            // Group by type
-            const hats = cosmetics.filter(c => c.type === 'hat');
-            const accessories = cosmetics.filter(c => c.type === 'accessory');
-
-            let html = '';
-            
-            if (hats.length > 0) {
-                html += '<div style="margin-bottom:15px;"><div style="font-size:11px; color:#999; margin-bottom:8px; text-transform:uppercase;">Hats</div>';
-                hats.forEach(cosmetic => {
-                    const isEquipped = equipped.hat === cosmetic.id;
-                    html += `
-                        <div class="cosmetic-item ${cosmetic.rarity}" style="${isEquipped ? 'border-color:var(--np-orange); background:rgba(255,107,0,0.1);' : ''}">
-                            <div class="cosmetic-icon">${cosmetic.icon}</div>
-                            <div class="cosmetic-info">
-                                <div class="cosmetic-name">${cosmetic.name}</div>
-                                <span class="rarity-badge rarity-${cosmetic.rarity}">${cosmetic.rarity.toUpperCase()}</span>
-                            </div>
-                            <button class="btn-action" style="padding:8px 15px; font-size:11px; width:auto; margin:0;" onclick="equipCosmetic('${cosmetic.id}', 'hat')">${isEquipped ? '✓ Equipped' : 'Equip'}</button>
-                        </div>
-                    `;
-                });
-                html += '</div>';
-            }
-
-            if (accessories.length > 0) {
-                html += '<div><div style="font-size:11px; color:#999; margin-bottom:8px; text-transform:uppercase;">Accessories</div>';
-                accessories.forEach(cosmetic => {
-                    const isEquipped = equipped.accessory === cosmetic.id;
-                    html += `
-                        <div class="cosmetic-item ${cosmetic.rarity}" style="${isEquipped ? 'border-color:var(--np-orange); background:rgba(255,107,0,0.1);' : ''}">
-                            <div class="cosmetic-icon">${cosmetic.icon}</div>
-                            <div class="cosmetic-info">
-                                <div class="cosmetic-name">${cosmetic.name}</div>
-                                <span class="rarity-badge rarity-${cosmetic.rarity}">${cosmetic.rarity.toUpperCase()}</span>
-                            </div>
-                            <button class="btn-action" style="padding:8px 15px; font-size:11px; width:auto; margin:0;" onclick="equipCosmetic('${cosmetic.id}', 'accessory')">${isEquipped ? '✓ Equipped' : 'Equip'}</button>
-                        </div>
-                    `;
-                });
-                html += '</div>';
-            }
-
-      listDiv.innerHTML = html;
+        listDiv.innerHTML = html;
         updateCharacterPreview();
     }
 
@@ -1205,583 +1424,739 @@
     function equipCosmetic(cosmeticId, slot) {
         storage.equipCosmetic(cosmeticId, slot);
         updateCosmeticsList();
+        updateAllCharacterDisplays();
     }
 
-function updateCharacterPreview() {
-            const charIcons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
-            const currentIcon = charIcons[state.currentChar] || '👤';
-            const equipped = storage.getEquippedCosmetics();
-            const cosmetics = storage.getCosmetics();
-            
-            const hatCosmetic = cosmetics.find(c => c.id === equipped.hat);
-            const accessoryCosmetic = cosmetics.find(c => c.id === equipped.accessory);
-            
-            let html = `<div style="position:relative; display:inline-block;">${currentIcon}`;
-            
-            if (hatCosmetic) {
-                html += `<span class="equipped-cosmetic hat" style="font-size:24px;">${hatCosmetic.icon}</span>`;
-            }
-            
-            if (accessoryCosmetic) {
-                html += `<span class="equipped-cosmetic accessory" style="font-size:20px;">${accessoryCosmetic.icon}</span>`;
-            }
-            
-            html += '</div>';
-            
-            document.getElementById('character-preview').innerHTML = html;
-            
-            // Update equipped list text
-            let equippedText = [];
-            if (hatCosmetic) equippedText.push(`Hat: ${hatCosmetic.name}`);
-            if (accessoryCosmetic) equippedText.push(`Accessory: ${accessoryCosmetic.name}`);
-            document.getElementById('equipped-cosmetics').innerText = 
-                equippedText.length > 0 ? equippedText.join(' • ') : 'No cosmetics equipped';
-        }
-       function updateCharacterDisplay() {
-    const charIcons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
-    const icon = charIcons[state.currentChar];
-    if (!icon) return;
-    
-    const equipped = storage.getEquippedCosmetics();
-    const cosmetics = storage.getCosmetics();
-    const hatCosmetic = cosmetics.find(c => c.id === equipped.hat);
-    const accessoryCosmetic = cosmetics.find(c => c.id === equipped.accessory);
-    
-    let characterDisplay = icon;
-    if (hatCosmetic || accessoryCosmetic) {
-        characterDisplay = '';
-        if (hatCosmetic) characterDisplay += hatCosmetic.icon;
-        characterDisplay += icon;
-        if (accessoryCosmetic) characterDisplay += accessoryCosmetic.icon;
-    }
-    
-    // Update walking character
-    const walkingChar = document.getElementById('walking-char');
-    if (walkingChar) walkingChar.innerText = characterDisplay;
-}
-
-function updateAllCharacterDisplays() {
-    const charIcons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
-    const equipped = storage.getEquippedCosmetics();
-    const cosmetics = storage.getCosmetics();
-    const hatCosmetic = cosmetics.find(c => c.id === equipped.hat);
-    
-    // Update each character display
-    Object.keys(charIcons).forEach(charName => {
-        const displayElement = document.getElementById(`char-display-${charName}`);
-        if (displayElement) {
-            let charDisplay = charIcons[charName];
-            if (hatCosmetic) {
-                charDisplay = hatCosmetic.icon + charIcons[charName];
-            }
-            displayElement.innerText = charDisplay;
-        }
-    });
-}
-        // ===== END OF NEW FUNCTION =====
-
-        function showLoginForm() {
-            document.getElementById('login-form').style.display = 'block';
-            document.getElementById('register-form').style.display = 'none';
-            document.getElementById('login-message').style.display = 'none';
-        }
-
-        function showRegisterForm() {
-            document.getElementById('login-form').style.display = 'none';
-            document.getElementById('register-form').style.display = 'block';
-            document.getElementById('login-message').style.display = 'none';
-        }
-
-        function handleLogin() {
-            const username = document.getElementById('login-username').value.trim();
-            const password = document.getElementById('login-password').value.trim();
-            const messageDiv = document.getElementById('login-message');
-            
-            if (!username || !password) {
-                messageDiv.style.display = 'block';
-                messageDiv.style.color = '#ff4444';
-                messageDiv.innerText = '⚠️ Please fill in all fields';
-                return;
-            }
-            
-            const account = storage.validateLogin(username, password);
-            if (!account) {
-                messageDiv.style.display = 'block';
-                messageDiv.style.color = '#ff4444';
-                messageDiv.innerText = '❌ Invalid username or password';
-                return;
-            }
-            
-            state.userName = username;
-            state.accountData = account;
-           messageDiv.style.display = 'block';
-messageDiv.style.color = '#00ff88';
-messageDiv.innerText = `Welcome back, ${username}! Your streak: ${account.streak || 0} days`;
-
-            
-            setTimeout(() => {
-                navigate('screen-daily');
-                updateDailyDashboard();
-                updateCoinDisplay();
-            }, 800);
-        }
-
-        function handleRegister() {
-            const username = document.getElementById('register-username').value.trim();
-            const password = document.getElementById('register-password').value.trim();
-            const confirm = document.getElementById('register-confirm').value.trim();
-            const messageDiv = document.getElementById('login-message');
-            
-            if (!username || !password || !confirm) {
-                messageDiv.style.display = 'block';
-                messageDiv.style.color = '#ff4444';
-                messageDiv.innerText = '⚠️ Please fill in all fields';
-                return;
-            }
-            
-            if (password !== confirm) {
-                messageDiv.style.display = 'block';
-                messageDiv.style.color = '#ff4444';
-                messageDiv.innerText = '❌ Passwords do not match';
-                return;
-            }
-            
-            if (password.length < 4) {
-                messageDiv.style.display = 'block';
-                messageDiv.style.color = '#ff4444';
-                messageDiv.innerText = '❌ Password must be at least 4 characters';
-                return;
-            }
-            
-            if (!storage.createAccount(username, password)) {
-                messageDiv.style.display = 'block';
-                messageDiv.style.color = '#ff4444';
-                messageDiv.innerText = '❌ Username already exists';
-                return;
-            }
-            
-            messageDiv.style.display = 'block';
-            messageDiv.style.color = '#00ff88';
-            messageDiv.innerText = '✅ Account created! You can now login.';
-            
-            setTimeout(() => {
-                showLoginForm();
-                document.getElementById('login-username').value = username;
-                document.getElementById('register-username').value = '';
-                document.getElementById('register-password').value = '';
-                document.getElementById('register-confirm').value = '';
-            }, 1500);
-        }
-
-        function updateDailyDashboard() {
-            const account = storage.getAccountData(state.userName);
-            if (!account) return;
-            
-            document.getElementById('streak-count').innerText = account.streak || 0;
-            document.getElementById('total-logins').innerText = account.totalLogins || 1;
-            document.querySelector('#screen-daily .card h2').innerText = `Daily Dashboard, ${state.userName}`;
-            
-            const task = storage.getDailyTask();
-            const today = new Date().toDateString();
-            const taskCompleted = account.lastTaskDate === today;
-            
-            const taskContent = document.getElementById('daily-task-content');
-           if (taskCompleted) {
-            taskContent.innerHTML = `<div style="text-align:center; padding:20px;"><div style="font-size:40px; margin-bottom:10px;">✅</div><div style="color:#00ff88; font-weight:800;">Task Completed, ${state.userName}!</div><div style="color:#999; font-size:11px; margin-top:5px;">Come back tomorrow</div></div>`;
-            } else if (task.type === 'trivia') {
-                taskContent.innerHTML = `
-                    <div style="margin-bottom:10px; font-weight:600; font-size:13px;">${task.question}</div>
-                    <div id="task-options"></div>
-                    <div style="text-align:center; margin-top:10px; color:var(--np-orange); font-weight:800; font-size:12px;">🎁 Reward: ${task.reward} pts + ${Math.floor(task.reward/10)} 🪙</div>
-                `;
-                const optionsDiv = document.getElementById('task-options');
-                task.options.forEach(opt => {
-                    const btn = document.createElement('button');
-                    btn.className = 'option-btn';
-                    btn.style.padding = '10px';
-                    btn.style.fontSize = '12px';
-                    btn.innerText = opt;
-                    btn.onclick = () => checkDailyTask(opt, task.answer, task.reward, btn);
-                    optionsDiv.appendChild(btn);
-                });
-            }
-            
-            updateHeaderScore();
-            updateCoinDisplay();
-        }
-
-        function checkDailyTask(choice, answer, reward, button) {
-            if (choice === answer) {
-                button.classList.add('correct');
-                document.querySelectorAll('#task-options .option-btn').forEach(btn => btn.disabled = true);
-                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-                if (!state.isMuted) audio.sfx.play().catch(e => console.log('SFX play failed:', e));
-                
-                if (storage.completeDailyTask('daily')) {
-                    const data = storage.getUserData();
-                    data.dailyTaskBonus = (data.dailyTaskBonus || 0) + reward;
-                    // Award coins for daily task (1 coin per 10 points)
-                    const coinsEarned = Math.floor(reward / 10);
-                    if (coinsEarned > 0) {
-                        storage.addCoins(coinsEarned);
-                    }
-                    storage.saveUserData(data);
-                    updateHeaderScore();
-                    updateCoinDisplay();
-                    
-                    setTimeout(() => {
-                        updateDailyDashboard();
-                    }, 1200);
-                }
-            } else {
-                button.classList.add('wrong');
-                button.disabled = true;
-            }
-        }
-
-      function enterApp() {
-    updateAllCharacterDisplays(); // Add this line
-    navigate('screen-character');
-}
-
-       function selectChar(name, icon, mode) {
-    const equipped = storage.getEquippedCosmetics();
-    const cosmetics = storage.getCosmetics();
-    
-    // Create character with cosmetics
-    let characterDisplay = icon;
-    const hatCosmetic = cosmetics.find(c => c.id === equipped.hat);
-    const accessoryCosmetic = cosmetics.find(c => c.id === equipped.accessory);
-    
-    // Build character string with cosmetics
-    if (hatCosmetic || accessoryCosmetic) {
-        characterDisplay = '';
-        if (hatCosmetic) characterDisplay += hatCosmetic.icon;
-        characterDisplay += icon;
-        if (accessoryCosmetic) characterDisplay += accessoryCosmetic.icon;
-    }
-    
-    document.getElementById('walking-char').innerText = characterDisplay;
-    state.currentMode = mode;
-    state.currentChar = name;
-    state.currentStage = 0;
-    audio.bgm.play().catch(e => console.log('Audio autoplay prevented:', e));
-    updateHeaderScore();
-    updateCoinDisplay();
-    updateCharacterDisplay(); // Update display everywhere
-    showClue();
-}
-
-       function startOppositeMode() {
-    const counterparts = { leo: 'sage', sage: 'leo', ollie: 'felix', felix: 'ollie', momo: 'sparky', sparky: 'momo' };
-    const newChar = counterparts[state.currentChar];
-    state.currentChar = newChar;
-    state.currentMode = state.currentMode === 'walking' ? 'digital' : 'walking';
-    state.currentStage = 0;
-    updateCharacterDisplay(); // Show character with cosmetics
-    showClue();
-}
-
-      function showClue() {
-    document.getElementById('map-bar').classList.remove('hidden');
-    const data = storyData[state.currentChar][state.currentStage];
-    
-    if (!data) return;
-
-    document.getElementById('clue-title').innerText = data.title;
-    const mediaBox = document.getElementById('clue-media');
-    const locationBox = document.getElementById('location-hint');
-
-    // Reset media box
-    mediaBox.innerHTML = '';
-    mediaBox.style.display = "none";
-
-    if (state.currentMode === 'walking') {
-        locationBox.style.display = "block";
-        document.getElementById('location-text').innerText = data.loc;
+    function updateCharacterPreview() {
+        const charIcons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
+        const currentIcon = charIcons[state.currentChar] || '👤';
+        const equipped = storage.getEquippedCosmetics();
+        const cosmetics = storage.getCosmetics();
         
-        // NEW: Show image if it exists in data
-        if (data.image) {
-            mediaBox.innerHTML = `<img src="${data.image}" alt="Clue Image" style="width:100%; height:100%; object-fit:cover;">`;
-            mediaBox.style.display = "block";
+        const hatCosmetic = cosmetics.find(c => c.id === equipped.hat);
+        const accessoryCosmetic = cosmetics.find(c => c.id === equipped.accessory);
+        
+        let html = `<div style="position:relative; display:inline-block;">${currentIcon}`;
+        
+        if (hatCosmetic) {
+            html += `<span class="equipped-cosmetic hat" style="font-size:24px;">${hatCosmetic.icon}</span>`;
         }
-  } else {
-    // Digital Trail Logic
-    locationBox.style.display = "none";
+        
+        if (accessoryCosmetic) {
+            html += `<span class="equipped-cosmetic accessory" style="font-size:20px;">${accessoryCosmetic.icon}</span>`;
+        }
+        
+        html += '</div>';
+        
+        document.getElementById('character-preview').innerHTML = html;
+        
+        let equippedText = [];
+        if (hatCosmetic) equippedText.push(`Hat: ${hatCosmetic.name}`);
+        if (accessoryCosmetic) equippedText.push(`Accessory: ${accessoryCosmetic.name}`);
+        document.getElementById('equipped-cosmetics').innerText = 
+            equippedText.length > 0 ? equippedText.join(' • ') : 'No cosmetics equipped';
+    }
+
+    function showPersonalityQuiz() {
+        state.quizAnswers = [];
+        const quizContainer = document.getElementById('personality-quiz');
+        const resultDiv = document.getElementById('quiz-result');
+        
+        resultDiv.style.display = 'none';
+        quizContainer.innerHTML = '';
+        
+        personalityQuiz.forEach((q, qIndex) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'quiz-question-container';
+            questionDiv.innerHTML = `<h4>Q${qIndex + 1}. ${q.question}</h4>`;
+            
+            q.options.forEach((option, oIndex) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'quiz-option';
+                optionDiv.innerHTML = `
+                    <span class="quiz-option-icon">${option.icon}</span>
+                    <span>${option.text}</span>
+                `;
+                optionDiv.onclick = () => selectQuizOption(qIndex, oIndex, option.value, optionDiv);
+                questionDiv.appendChild(optionDiv);
+            });
+            
+            quizContainer.appendChild(questionDiv);
+        });
+        
+        navigate('screen-quiz-intro');
+    }
+
+    function selectQuizOption(questionIndex, optionIndex, value, element) {
+        const questionContainer = element.parentElement;
+        questionContainer.querySelectorAll('.quiz-option').forEach(opt => opt.classList.remove('selected'));
+        element.classList.add('selected');
+        
+        state.quizAnswers[questionIndex] = value;
+        
+        if (state.quizAnswers.filter(a => a).length === personalityQuiz.length) {
+            setTimeout(() => showQuizResult(), 500);
+        }
+    }
+
+ function showQuizResult() {
+    const walkingCount = state.quizAnswers.filter(a => a === 'walking').length;
+    const digitalCount = state.quizAnswers.filter(a => a === 'digital').length;
     
-    // Prioritize video over image if both exist
-    if (data.media) {
-        mediaBox.innerHTML = data.media;
-        mediaBox.style.display = "block";
-    } else if (data.image) {
-        mediaBox.innerHTML = `<img src="${data.image}" alt="Clue Image" style="width:100%; height:100%; object-fit:cover;">`;
-        mediaBox.style.display = "block";
-    }
-}
-    document.getElementById('clue-quote').innerText = `${data.icon} ${data.exp}: "${data.fact}"`;
-    updateNodes();
-    navigate('screen-clue');
-}
-
-        function showQuiz() {
-            state.attemptsLeft = 3;
-            state.quizAnswered = false;
-            updateAttempts();
-            const data = storyData[state.currentChar][state.currentStage];
-           const quizDiv = document.getElementById('quiz-question');
-quizDiv.innerHTML = ''; // Clear existing content
-
-if (data.image) {
-    const img = document.createElement('img');
-    img.src = data.image;
-    img.style.cssText = `
-        width: 100%; 
-        height: 150px; 
-        object-fit: cover; 
-        border-radius: 12px; 
-        margin-bottom: 10px; 
-        display: block;
-        border: 1px solid #00d4ff;
-    `;
-    quizDiv.appendChild(img);
-}
-quizDiv.innerHTML += `<br><strong>${data.question}</strong>`;
-
-            const optionsContainer = document.getElementById('quiz-options');
-            optionsContainer.innerHTML = "";
-            data.options.forEach(option => {
-                const button = document.createElement('button');
-                button.className = "option-btn";
-                button.innerText = option;
-                button.onclick = () => checkAnswer(option, button, data.answer);
-                optionsContainer.appendChild(button);
-            });
-            navigate('screen-quiz');
-        }
-
-        function checkAnswer(choice, button, correctAnswer) {
-            if (state.quizAnswered) return;
-            if (choice === correctAnswer) {
-                state.quizAnswered = true;
-                button.classList.add('correct');
-                document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
-                confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
-                if (!state.isMuted) audio.sfx.play().catch(e => console.log('SFX play failed:', e));
-                const baseScore = state.currentMode === 'walking' ? 100 : 50;
-                let points;
-                if (state.attemptsLeft === 3) points = baseScore;
-                else if (state.attemptsLeft === 2) points = Math.floor(baseScore / 2);
-                else points = Math.floor(baseScore / 4);
-                storage.saveScore(points);
-                updateHeaderScore();
-                updateCoinDisplay();
-                setTimeout(runTransition, 1200);
-            } else {
-                button.classList.add('wrong');
-                button.disabled = true;
-                state.attemptsLeft--;
-                updateAttempts();
-                if (state.attemptsLeft <= 0) {
-                    state.quizAnswered = true;
-                    document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
-                    setTimeout(runTransition, 1500);
-                }
-            }
-        }
-
-        function runTransition() {
-            const overlay = document.getElementById('transition-overlay');
-            overlay.classList.add('active');
-            setTimeout(() => {
-                overlay.classList.remove('active');
-                const totalStages = storyData[state.currentChar].length;
-                if (state.currentStage < totalStages - 1) {
-                    state.currentStage++;
-                    showClue();
-                } else {
-                    finishGame();
-                }
-            }, 2500);
-        }
-
-        function updateLeaderboard() {
-            const leaderboardList = document.getElementById('leaderboard-list');
-            const users = storage.getAllUsers();
-            if (users.length === 0) {
-                leaderboardList.innerHTML = '<div style="text-align:center; color:#888; padding:20px; font-size:12px;">No players yet. Be the first!</div>';
-                return;
-            }
-            const top10 = users.slice(0, 10);
-            leaderboardList.innerHTML = top10.map((user, index) => {
-                const rank = index + 1;
-                let medal = '';
-                if (rank === 1) medal = '<span class="medal">🥇</span>';
-                else if (rank === 2) medal = '<span class="medal">🥈</span>';
-                else if (rank === 3) medal = '<span class="medal">🥉</span>';
-                const isCurrentUser = user.name.toLowerCase() === state.userName.toLowerCase();
-                const highlightClass = isCurrentUser ? 'current-user' : '';
-                return `<div class="list-item ${highlightClass}"><span class="rank">${medal || rank}</span><span class="name">${user.name}${isCurrentUser ? ' (You)' : ''}</span><span class="score">${user.total}</span></div>`;
-            }).join('');
-        }
-
-        function submitFeedback() {
-            const feedbackText = document.getElementById('feedback-text').value.trim();
-            const statusDiv = document.getElementById('feedback-status');
-            if (!feedbackText) {
-                statusDiv.style.display = 'block';
-                statusDiv.style.color = '#ff4444';
-                statusDiv.innerText = '⚠️ Please enter your feedback first';
-                return;
-            }
-            const feedbackKey = 'np_feedback';
-            const feedbacks = JSON.parse(localStorage.getItem(feedbackKey) || '[]');
-            const feedbackData = {
-                user: state.userName,
-                feedback: feedbackText,
-                score: storage.getTotalScore().total + (storage.getUserData().dailyTaskBonus || 0),
-                character: state.currentChar,
-                mode: state.currentMode,
-                timestamp: new Date().toISOString()
-            };
-            feedbacks.push(feedbackData);
-            try {
-                localStorage.setItem(feedbackKey, JSON.stringify(feedbacks));
-                statusDiv.style.display = 'block';
-                statusDiv.style.color = '#00ff88';
-                statusDiv.innerText = '✅ Thank you! Your feedback has been saved.';
-                document.getElementById('feedback-text').value = '';
-                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
-            } catch (e) {
-                statusDiv.style.display = 'block';
-                statusDiv.style.color = '#ff4444';
-                statusDiv.innerText = '❌ Error saving feedback. Please try again.';
-                console.error('Feedback save error:', e);
-            }
-        }
-
-        function viewAllFeedback() {
-            const feedbackKey = 'np_feedback';
-            const feedbacks = JSON.parse(localStorage.getItem(feedbackKey) || '[]');
-            const feedbackList = document.getElementById('feedback-list');
-            if (feedbacks.length === 0) {
-                feedbackList.innerHTML = '<div style="text-align:center; color:#888; padding:40px; font-size:12px;">No feedback yet. Be the first to share your thoughts!</div>';
-            } else {
-                const characterIcons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
-                feedbackList.innerHTML = feedbacks.map((fb) => {
-                    const date = new Date(fb.timestamp);
-                    const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-                    const icon = characterIcons[fb.character] || '✨';
-                    return `<div style="background:rgba(0,0,0,0.3); border-radius:12px; padding:15px; margin-bottom:12px; text-align:left;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div><b style="color:var(--np-orange); font-size:13px;">${icon} ${fb.user}</b><span style="color:#888; font-size:10px; margin-left:8px;">${formattedDate}</span></div><span style="color:#00ff88; font-size:11px; font-weight:800;">${fb.score} pts</span></div><p style="margin:0; color:#fff; font-size:12px; line-height:1.5; font-style:italic;">"${fb.feedback}"</p></div>`;
-                }).reverse().join('');
-            }
-            navigate('screen-feedback');
-        }
-
-        function finishGame() {
-            document.getElementById('map-bar').classList.add('hidden');
-            const scores = storage.getTotalScore();
-            const data = storage.getUserData();
-            let walkingTotal = 0;
-            let digitalTotal = 0;
-            ['leo', 'ollie', 'momo'].forEach(char => {
-                if (data[char]) Object.values(data[char]).forEach(score => walkingTotal += score);
-            });
-            ['sage', 'felix', 'sparky'].forEach(char => {
-                if (data[char]) Object.values(data[char]).forEach(score => digitalTotal += score);
-            });
-            const dailyBonus = data.dailyTaskBonus || 0;
-            document.getElementById('res-walking').innerText = walkingTotal;
-            document.getElementById('res-digital').innerText = digitalTotal;
-            document.getElementById('res-daily').innerText = dailyBonus;
-            document.getElementById('res-total').innerText = `${scores.total + dailyBonus} pts`;
-            const switchButton = document.getElementById('switch-btn');
-            switchButton.innerText = state.currentMode === 'walking' ? "TRY DIGITAL TRAIL" : "TRY WALKING TRAIL";
-            updateLeaderboard();
-            navigate('screen-finish');
-        }
-
-        function updateAttempts() {
-            document.getElementById('attempts-display').innerText = "ATTEMPTS LEFT: " + "⭐".repeat(state.attemptsLeft);
-        }
-
-        function updateNodes() {
-            document.querySelectorAll('.node').forEach((node, index) => {
-                if (index < state.currentStage) node.className = "node done";
-                else if (index === state.currentStage) node.className = "node active";
-                else node.className = "node";
-            });
-        }
-
-        function updateHeaderScore() {
-            const scores = storage.getTotalScore();
-            const data = storage.getUserData();
-            const bonus = data.dailyTaskBonus || 0;
-            document.getElementById('header-score').innerText = `PTS: ${scores.total + bonus}`;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('mute-btn').addEventListener('click', toggleMute);
-           document.getElementById('shop-btn').addEventListener('click', () => {
-    updateCoinDisplay();
-    updateCosmeticsList();
-    showCosmeticPreview('hats'); // Show hats by default
-    navigate('screen-shop');
-});
-          document.getElementById('back-from-shop-btn').addEventListener('click', () => {
-    if (state.userName) {
-        navigate('screen-daily');
+    const recommendedMode = walkingCount > digitalCount ? 'walking' : 'digital';
+    state.recommendedMode = recommendedMode;
+    storage.setRecommendedMode(recommendedMode);
+    
+    const resultDiv = document.getElementById('quiz-result');
+    const iconDiv = document.getElementById('result-icon');
+    const titleDiv = document.getElementById('result-title');
+    const descDiv = document.getElementById('result-desc');
+    
+    if (recommendedMode === 'walking') {
+        iconDiv.innerText = '🚶‍♂️';
+        titleDiv.innerText = 'WALKING TRAIL EXPLORER';
+        descDiv.innerHTML = `
+            You learn best through hands-on exploration! Walking trails will let you discover NP's heritage by physically visiting historical locations around campus.
+            <div style="margin-top:20px; padding:15px; background:rgba(255,107,0,0.1); border:1px solid var(--np-orange); border-radius:12px;">
+                <div style="font-size:12px; color:#ffaa00; margin-bottom:12px; font-weight:800; text-transform:uppercase;">📍 Your Recommended Journey:</div>
+                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                    <div style="background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:8px; font-size:20px;">
+                        🦁 <span style="font-size:11px; vertical-align:middle; margin-left:4px;">Leo</span>
+                    </div>
+                    <div style="color:#666; font-size:16px; display:flex; align-items:center;">→</div>
+                    <div style="background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:8px; font-size:20px;">
+                        🦦 <span style="font-size:11px; vertical-align:middle; margin-left:4px;">Ollie</span>
+                    </div>
+                    <div style="color:#666; font-size:16px; display:flex; align-items:center;">→</div>
+                    <div style="background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:8px; font-size:20px;">
+                        🐒 <span style="font-size:11px; vertical-align:middle; margin-left:4px;">Momo</span>
+                    </div>
+                </div>
+                <div style="font-size:10px; color:#999; margin-top:10px; text-align:center;">Complete all three to unlock digital trails!</div>
+            </div>
+        `;
     } else {
-        navigate('screen-start');
+        iconDiv.innerText = '💻';
+        titleDiv.innerText = 'DIGITAL TRAIL NAVIGATOR';
+        descDiv.innerHTML = `
+            You prefer immersive digital experiences! Digital trails offer rich multimedia content including videos and interactive elements to explore NP's history.
+            <div style="margin-top:20px; padding:15px; background:rgba(255,107,0,0.1); border:1px solid var(--np-orange); border-radius:12px;">
+                <div style="font-size:12px; color:#ffaa00; margin-bottom:12px; font-weight:800; text-transform:uppercase;">💻 Your Recommended Journey:</div>
+                <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+                    <div style="background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:8px; font-size:20px;">
+                        🦉 <span style="font-size:11px; vertical-align:middle; margin-left:4px;">Sage</span>
+                    </div>
+                    <div style="color:#666; font-size:16px; display:flex; align-items:center;">→</div>
+                    <div style="background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:8px; font-size:20px;">
+                        🐱 <span style="font-size:11px; vertical-align:middle; margin-left:4px;">Felix</span>
+                    </div>
+                    <div style="color:#666; font-size:16px; display:flex; align-items:center;">→</div>
+                    <div style="background:rgba(0,0,0,0.3); padding:8px 12px; border-radius:8px; font-size:20px;">
+                        🐿️ <span style="font-size:11px; vertical-align:middle; margin-left:4px;">Sparky</span>
+                    </div>
+                </div>
+                <div style="font-size:10px; color:#999; margin-top:10px; text-align:center;">Complete all three to unlock walking trails!</div>
+            </div>
+        `;
     }
-});
-document.getElementById('preview-hats-btn').addEventListener('click', () => showCosmeticPreview('hats'));
-document.getElementById('preview-accessories-btn').addEventListener('click', () => showCosmeticPreview('accessories'));
-document.getElementById('gacha-normal').addEventListener('click', () => rollGacha('normal'));
-            document.getElementById('gacha-premium').addEventListener('click', () => rollGacha('premium'));
-            document.getElementById('login-btn').addEventListener('click', handleLogin);
-            document.getElementById('register-btn').addEventListener('click', handleRegister);
-            document.getElementById('show-register-btn').addEventListener('click', showRegisterForm);
-            document.getElementById('show-login-btn').addEventListener('click', showLoginForm);
-            document.getElementById('start-journey-btn').addEventListener('click', enterApp);
-            document.getElementById('ready-btn').addEventListener('click', showQuiz);
-            document.getElementById('submit-feedback-btn').addEventListener('click', submitFeedback);
-            document.getElementById('view-feedback-btn').addEventListener('click', viewAllFeedback);
-            document.getElementById('switch-btn').addEventListener('click', startOppositeMode);
-            document.getElementById('restart-btn').addEventListener('click', () => {
-             // Reset journey state but keep user logged in
-            state.currentMode = "";
-            state.currentChar = "";
-            state.currentStage = 0;
-            state.attemptsLeft = 3;
-            state.quizAnswered = false;
+      resultDiv.style.display = 'block';
+    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+}
+
+    function updateCharacterLocks() {
+        const hasCompleted = storage.hasCompletedRecommendedTrail();
+        const recommendedMode = storage.getRecommendedMode();
+        
+        const messageDiv = document.getElementById('trail-unlock-message');
+        
+        if (!hasCompleted && recommendedMode) {
+            messageDiv.style.display = 'block';
+        } else {
+            messageDiv.style.display = 'none';
+        }
+        
+        document.querySelectorAll('.char-card').forEach(card => {
+            const cardMode = card.dataset.mode;
+            const lockOverlay = card.querySelector('.lock-overlay');
+            
+            if (!hasCompleted && recommendedMode && cardMode !== recommendedMode) {
+                card.classList.add('locked');
+                if (lockOverlay) lockOverlay.style.display = 'flex';
+            } else {
+                card.classList.remove('locked');
+                if (lockOverlay) lockOverlay.style.display = 'none';
+            }
+        });
+    }
+
+    function showLoginForm() {
+        document.getElementById('login-form').style.display = 'block';
+        document.getElementById('register-form').style.display = 'none';
+        document.getElementById('login-message').style.display = 'none';
+    }
+
+    function showRegisterForm() {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('register-form').style.display = 'block';
+        document.getElementById('login-message').style.display = 'none';
+    }
+
+    function handleLogin() {
+        const username = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value.trim();
+        const messageDiv = document.getElementById('login-message');
+        
+        if (!username || !password) {
+            messageDiv.style.display = 'block';
+            messageDiv.style.color = '#ff4444';
+            messageDiv.innerText = '⚠️ Please fill in all fields';
+            return;
+        }
+        
+        const account = storage.validateLogin(username, password);
+        if (!account) {
+            messageDiv.style.display = 'block';
+            messageDiv.style.color = '#ff4444';
+            messageDiv.innerText = '❌ Invalid username or password';
+            return;
+        }
+        
+        state.userName = username;
+        state.accountData = account;
+        messageDiv.style.display = 'block';
+        messageDiv.style.color = '#00ff88';
+        messageDiv.innerText = `Welcome back, ${username}! Your streak: ${account.streak || 0} days`;
+        
+        setTimeout(() => {
             navigate('screen-daily');
             updateDailyDashboard();
-             });
-            document.getElementById('back-to-finish').addEventListener('click', () => navigate('screen-finish'));
-            
-            document.getElementById('login-username').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handleLogin();
-            });
-            document.getElementById('login-password').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handleLogin();
-            });
-            document.getElementById('register-confirm').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') handleRegister();
-            });
-            
-            document.querySelectorAll('.char-card').forEach(card => {
-                card.addEventListener('click', (e) => {
-                    const name = e.currentTarget.dataset.char;
-                    const icon = e.currentTarget.dataset.icon;
-                    const mode = e.currentTarget.dataset.mode;
-                    selectChar(name, icon, mode);
-                    const userScores = storage.getUserData();
-const pastScore = userScores[name] ? Object.values(userScores[name])[0] || 0 : 0;
-alert(`${name} suits you! Last score: ${pastScore} pts`);
+            updateCoinDisplay();
+        }, 800);
+    }
 
-                });
+    function handleRegister() {
+        const username = document.getElementById('register-username').value.trim();
+        const password = document.getElementById('register-password').value.trim();
+        const confirm = document.getElementById('register-confirm').value.trim();
+        const messageDiv = document.getElementById('login-message');
+        
+        if (!username || !password || !confirm) {
+            messageDiv.style.display = 'block';
+            messageDiv.style.color = '#ff4444';
+            messageDiv.innerText = '⚠️ Please fill in all fields';
+            return;
+        }
+        
+        if (password !== confirm) {
+            messageDiv.style.display = 'block';
+            messageDiv.style.color = '#ff4444';
+            messageDiv.innerText = '❌ Passwords do not match';
+            return;
+        }
+        
+        if (password.length < 4) {
+            messageDiv.style.display = 'block';
+            messageDiv.style.color = '#ff4444';
+            messageDiv.innerText = '❌ Password must be at least 4 characters';
+            return;
+        }
+        
+        if (!storage.createAccount(username, password)) {
+            messageDiv.style.display = 'block';
+            messageDiv.style.color = '#ff4444';
+            messageDiv.innerText = '❌ Username already exists';
+            return;
+        }
+        
+        messageDiv.style.display = 'block';
+        messageDiv.style.color = '#00ff88';
+        messageDiv.innerText = '✅ Account created! You can now login.';
+        
+        setTimeout(() => {
+            showLoginForm();
+            document.getElementById('login-username').value = username;
+            document.getElementById('register-username').value = '';
+            document.getElementById('register-password').value = '';
+            document.getElementById('register-confirm').value = '';
+        }, 1500);
+    }
+
+    function updateDailyDashboard() {
+        const account = storage.getAccountData(state.userName);
+        if (!account) return;
+        
+        document.getElementById('streak-count').innerText = account.streak || 0;
+        document.getElementById('total-logins').innerText = account.totalLogins || 1;
+        document.querySelector('#screen-daily .card h2').innerText = `Daily Dashboard, ${state.userName}`;
+        
+        const task = storage.getDailyTask();
+        const today = new Date().toDateString();
+        const taskCompleted = account.lastTaskDate === today;
+        
+        const taskContent = document.getElementById('daily-task-content');
+        if (taskCompleted) {
+            taskContent.innerHTML = `<div style="text-align:center; padding:20px;"><div style="font-size:40px; margin-bottom:10px;">✅</div><div style="color:#00ff88; font-weight:800;">Task Completed, ${state.userName}!</div><div style="color:#999; font-size:11px; margin-top:5px;">Come back tomorrow</div></div>`;
+        } else if (task.type === 'trivia') {
+            taskContent.innerHTML = `
+                <div style="margin-bottom:10px; font-weight:600; font-size:13px;">${task.question}</div>
+                <div id="task-options"></div>
+                <div style="text-align:center; margin-top:10px; color:var(--np-orange); font-weight:800; font-size:12px;">🎁 Reward: ${task.reward} pts + ${Math.floor(task.reward/10)} 🪙</div>
+            `;
+            const optionsDiv = document.getElementById('task-options');
+            task.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.style.padding = '10px';
+                btn.style.fontSize = '12px';
+                btn.innerText = opt;
+                btn.onclick = () => checkDailyTask(opt, task.answer, task.reward, btn);
+                optionsDiv.appendChild(btn);
             });
+        }
+        
+        updateHeaderScore();
+        updateCoinDisplay();
+    }
+
+    function checkDailyTask(choice, answer, reward, button) {
+        if (choice === answer) {
+            button.classList.add('correct');
+            document.querySelectorAll('#task-options .option-btn').forEach(btn => btn.disabled = true);
+            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            if (!state.isMuted) audio.sfx.play().catch(e => console.log('SFX play failed:', e));
+            
+            if (storage.completeDailyTask('daily')) {
+                const data = storage.getUserData();
+                data.dailyTaskBonus = (data.dailyTaskBonus || 0) + reward;
+                const coinsEarned = Math.floor(reward / 10);
+                if (coinsEarned > 0) {
+                    storage.addCoins(coinsEarned);
+                }
+                storage.saveUserData(data);
+                updateHeaderScore();
+                updateCoinDisplay();
+                
+                setTimeout(() => {
+                    updateDailyDashboard();
+                }, 1200);
+            }
+        } else {
+            button.classList.add('wrong');
+            button.disabled = true;
+        }
+    }
+
+    function enterApp() {
+        updateAllCharacterDisplays();
+        
+        const recommendedMode = storage.getRecommendedMode();
+        if (!recommendedMode) {
+            showPersonalityQuiz();
+        } else {
+            updateCharacterLocks();
+            navigate('screen-character');
+        }
+    }
+
+    function selectChar(name, icon, mode) {
+        const hasCompleted = storage.hasCompletedRecommendedTrail();
+        const recommendedMode = storage.getRecommendedMode();
+        
+        if (!hasCompleted && recommendedMode && mode !== recommendedMode) {
+            alert('🔒 Complete your recommended trail first to unlock other trails!');
+            return;
+        }
+        
+        const equipped = storage.getEquippedCosmetics();
+        const cosmetics = storage.getCosmetics();
+        
+        let characterDisplay = icon;
+        const hatCosmetic = cosmetics.find(c => c.id === equipped.hat);
+        const accessoryCosmetic = cosmetics.find(c => c.id === equipped.accessory);
+        
+        if (hatCosmetic || accessoryCosmetic) {
+            characterDisplay = '';
+            if (hatCosmetic) characterDisplay += hatCosmetic.icon;
+            characterDisplay += icon;
+            if (accessoryCosmetic) characterDisplay += accessoryCosmetic.icon;
+        }
+        
+        document.getElementById('walking-char').innerText = characterDisplay;
+        state.currentMode = mode;
+        state.currentChar = name;
+        state.currentStage = 0;
+        audio.bgm.play().catch(e => console.log('Audio autoplay prevented:', e));
+        updateHeaderScore();
+        updateCoinDisplay();
+        updateCharacterDisplay();
+        showClue();
+    }
+
+    function updateCharacterDisplay() {
+        const charIcons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
+        const icon = charIcons[state.currentChar];
+        if (!icon) return;
+        
+        const equipped = storage.getEquippedCosmetics();
+        const cosmetics = storage.getCosmetics();
+        const hatCosmetic = cosmetics.find(c => c.id === equipped.hat);
+        const accessoryCosmetic = cosmetics.find(c => c.id === equipped.accessory);
+        
+        let characterDisplay = icon;
+        if (hatCosmetic || accessoryCosmetic) {
+            characterDisplay = '';
+            if (hatCosmetic) characterDisplay += hatCosmetic.icon;
+            characterDisplay += icon;
+            if (accessoryCosmetic) characterDisplay += accessoryCosmetic.icon;
+        }
+        
+        const walkingChar = document.getElementById('walking-char');
+        if (walkingChar) walkingChar.innerText = characterDisplay;
+    }
+
+    function updateAllCharacterDisplays() {
+        const charIcons = { leo: '🦁', sage: '🦉', ollie: '🦦', felix: '🐱', momo: '🐒', sparky: '🐿️' };
+        const equipped = storage.getEquippedCosmetics();
+        const cosmetics = storage.getCosmetics();
+        const hatCosmetic = cosmetics.find(c => c.id === equipped.hat);
+        
+        Object.keys(charIcons).forEach(charName => {
+            const displayElement = document.getElementById(`char-display-${charName}`);
+            if (displayElement) {
+                let charDisplay = charIcons[charName];
+                if (hatCosmetic) {
+                    charDisplay = hatCosmetic.icon + charIcons[charName];
+                }
+                displayElement.innerText = charDisplay;
+            }
         });
-    </script>
+    }
+
+    function startOppositeMode() {
+        const hasCompleted = storage.hasCompletedRecommendedTrail();
+        const recommendedMode = storage.getRecommendedMode();
+        const oppositeMode = state.currentMode === 'walking' ? 'digital' : 'walking';
+        
+        if (!hasCompleted && recommendedMode && oppositeMode !== recommendedMode) {
+            alert('🔒 Complete your recommended trail first to unlock other trails!');
+            return;
+        }
+        
+        const counterparts = { leo: 'sage', sage: 'leo', ollie: 'felix', felix: 'ollie', momo: 'sparky', sparky: 'momo' };
+        const newChar = counterparts[state.currentChar];
+        state.currentChar = newChar;
+        state.currentMode = oppositeMode;
+        state.currentStage = 0;
+        updateCharacterDisplay();
+        showClue();
+    }
+
+    function showClue() {
+        document.getElementById('map-bar').classList.remove('hidden');
+        const data = storyData[state.currentChar][state.currentStage];
+        
+        if (!data) return;
+
+        document.getElementById('clue-title').innerText = data.title;
+        const mediaBox = document.getElementById('clue-media');
+        const locationBox = document.getElementById('location-hint');
+
+        mediaBox.innerHTML = '';
+        mediaBox.style.display = "none";
+
+        if (state.currentMode === 'walking') {
+            locationBox.style.display = "block";
+            document.getElementById('location-text').innerText = data.loc;
+            
+            if (data.image) {
+                mediaBox.innerHTML = `<img src="${data.image}" alt="Clue Image" style="width:100%; height:100%; object-fit:cover;">`;
+                mediaBox.style.display = "block";
+            }
+        } else {
+            locationBox.style.display = "none";
+            
+            if (data.media) {
+                mediaBox.innerHTML = data.media;
+                mediaBox.style.display = "block";
+            } else if (data.image) {
+                mediaBox.innerHTML = `<img src="${data.image}" alt="Clue Image" style="width:100%; height:100%; object-fit:cover;">`;
+                mediaBox.style.display = "block";
+            }
+        }
+        document.getElementById('clue-quote').innerText = `${data.icon} ${data.exp}: "${data.fact}"`;
+        updateNodes();
+        navigate('screen-clue');
+    }
+
+    function showQuiz() {
+        state.attemptsLeft = 3;
+        state.quizAnswered = false;
+        updateAttempts();
+        const data = storyData[state.currentChar][state.currentStage];
+        const quizDiv = document.getElementById('quiz-question');
+        quizDiv.innerHTML = '';
+
+        if (data.image) {
+            const img = document.createElement('img');
+            img.src = data.image;
+            img.style.cssText = `
+                width: 100%; 
+                height: 150px; 
+                object-fit: cover; 
+                border-radius: 12px; 
+                margin-bottom: 10px; 
+                display: block;
+                border: 1px solid #00d4ff;
+            `;
+            quizDiv.appendChild(img);
+        }
+        quizDiv.innerHTML += `<br><strong>${data.question}</strong>`;
+
+        const optionsContainer = document.getElementById('quiz-options');
+        optionsContainer.innerHTML = "";
+        data.options.forEach(option => {
+            const button = document.createElement('button');
+            button.className = "option-btn";
+            button.innerText = option;
+            button.onclick = () => checkAnswer(option, button, data.answer);
+            optionsContainer.appendChild(button);
+        });
+        navigate('screen-quiz');
+    }
+
+    function checkAnswer(choice, button, correctAnswer) {
+        if (state.quizAnswered) return;
+        if (choice === correctAnswer) {
+            state.quizAnswered = true;
+            button.classList.add('correct');
+            document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+            confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+            if (!state.isMuted) audio.sfx.play().catch(e => console.log('SFX play failed:', e));
+            const baseScore = state.currentMode === 'walking' ? 100 : 50;
+            let points;
+            if (state.attemptsLeft === 3) points = baseScore;
+            else if (state.attemptsLeft === 2) points = Math.floor(baseScore / 2);
+            else points = Math.floor(baseScore / 4);
+            storage.saveScore(points);
+            updateHeaderScore();
+            updateCoinDisplay();
+            setTimeout(runTransition, 1200);
+        } else {
+            button.classList.add('wrong');
+            button.disabled = true;
+            state.attemptsLeft--;
+            updateAttempts();
+            if (state.attemptsLeft <= 0) {
+                state.quizAnswered = true;
+                document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+                setTimeout(runTransition, 1500);
+            }
+        }
+    }
+
+    function runTransition() {
+        const overlay = document.getElementById('transition-overlay');
+        overlay.classList.add('active');
+        setTimeout(() => {
+            overlay.classList.remove('active');
+            const totalStages = storyData[state.currentChar].length;
+            if (state.currentStage < totalStages - 1) {
+                state.currentStage++;
+                showClue();
+            } else {
+                finishGame();
+            }
+        }, 2500);
+    }
+
+    function updateLeaderboard() {
+    const leaderboardList = document.getElementById('leaderboard-list');
+    const users = storage.getAllUsers();
+    if (users.length === 0) {
+        leaderboardList.innerHTML = '<div style="text-align:center; color:#888; padding:20px; font-size:12px;">No players yet. Be the first!</div>';
+        return;
+    }
+    const top10 = users.slice(0, 10);
+    leaderboardList.innerHTML = top10.map((user, index) => {
+        const rank = index + 1;
+        let medal = '';
+        if (rank === 1) medal = '<span class="medal">🥇</span>';
+        else if (rank === 2) medal = '<span class="medal">🥈</span>';
+        else if (rank === 3) medal = '<span class="medal">🥉</span>';
+        const isCurrentUser = user.name.toLowerCase() === state.userName.toLowerCase();
+        const highlightClass = isCurrentUser ? 'current-user' : '';
+       return `<div class="list-item ${highlightClass}"><span class="rank">${medal || rank}</span><span class="name">${user.name}${isCurrentUser ? ' (You)' : ''}</span><span class="score">${user.total} pts</span></div>`;
+    }).join('');
+    }
+    function updateHeaderScore() {
+        const data = storage.getUserData();
+        let total = 0;
+        
+        // Calculate total from all characters
+        Object.keys(data).forEach(charKey => {
+            if (typeof data[charKey] === 'object' && charKey !== 'dailyTaskBonus' && charKey !== 'cosmetics' && charKey !== 'equippedCosmetics') {
+                Object.values(data[charKey]).forEach(score => total += score);
+            }
+        });
+        
+        // Add daily task bonus
+        total += (data.dailyTaskBonus || 0);
+        
+        document.getElementById('header-score').innerText = `PTS: ${total}`;
+    }
+
+    function updateAttempts() {
+        const attemptsDisplay = document.getElementById('attempts-display');
+        if (attemptsDisplay) {
+            const hearts = '❤️'.repeat(state.attemptsLeft) + '🖤'.repeat(3 - state.attemptsLeft);
+            attemptsDisplay.innerText = `Attempts: ${hearts}`;
+        }
+    }
+
+    function updateNodes() {
+        for (let i = 0; i < 3; i++) {
+            const node = document.getElementById(`n${i}`);
+            if (node) {
+                node.classList.remove('active', 'done');
+                if (i < state.currentStage) {
+                    node.classList.add('done');
+                } else if (i === state.currentStage) {
+                    node.classList.add('active');
+                }
+            }
+        }
+    }
+
+    function finishGame() {
+        const data = storage.getUserData();
+        
+        // Calculate scores by mode
+        let walkingTotal = 0;
+        let digitalTotal = 0;
+        
+        const walkingChars = ['leo', 'ollie', 'momo'];
+        const digitalChars = ['sage', 'felix', 'sparky'];
+        
+        walkingChars.forEach(char => {
+            if (data[char]) {
+                Object.values(data[char]).forEach(score => walkingTotal += score);
+            }
+        });
+        
+        digitalChars.forEach(char => {
+            if (data[char]) {
+                Object.values(data[char]).forEach(score => digitalTotal += score);
+            }
+        });
+        
+        const dailyBonus = data.dailyTaskBonus || 0;
+        const grandTotal = walkingTotal + digitalTotal + dailyBonus;
+        
+        // Update result display
+        document.getElementById('res-walking').innerText = walkingTotal;
+        document.getElementById('res-digital').innerText = digitalTotal;
+        document.getElementById('res-daily').innerText = dailyBonus;
+        document.getElementById('res-total').innerText = grandTotal + ' pts';
+        
+        // Update switch button
+        const switchBtn = document.getElementById('switch-btn');
+        const oppositeMode = state.currentMode === 'walking' ? 'digital' : 'walking';
+        const oppositeModeText = oppositeMode === 'walking' ? 'Walking' : 'Digital';
+        switchBtn.innerText = `Try ${oppositeModeText} Trail`;
+        
+        // Update leaderboard
+        updateLeaderboard();
+        
+        // Navigate to finish screen
+        navigate('screen-finish');
+    }
+
+    function submitFeedback() {
+        const feedbackText = document.getElementById('feedback-text').value.trim();
+        const statusDiv = document.getElementById('feedback-status');
+        
+        if (!feedbackText) {
+            statusDiv.style.display = 'block';
+            statusDiv.style.color = '#ff4444';
+            statusDiv.innerText = '⚠️ Please write something first!';
+            return;
+        }
+        
+        // Save feedback to localStorage
+        const feedbackKey = 'np_feedback_list';
+        let feedbackList = [];
+        
+        try {
+            const existing = localStorage.getItem(feedbackKey);
+            if (existing) feedbackList = JSON.parse(existing);
+        } catch (e) {
+            console.error('Error reading feedback:', e);
+        }
+        
+        feedbackList.push({
+            user: state.userName,
+            text: feedbackText,
+            date: new Date().toISOString()
+        });
+        
+        localStorage.setItem(feedbackKey, JSON.stringify(feedbackList));
+        
+        // Show success message
+        statusDiv.style.display = 'block';
+        statusDiv.style.color = '#00ff88';
+        statusDiv.innerText = '✅ Feedback submitted! Thank you!';
+        
+        // Clear textarea
+        document.getElementById('feedback-text').value = '';
+        
+        // Hide message after 3 seconds
+        setTimeout(() => {
+            statusDiv.style.display = 'none';
+        }, 3000);
+    }
+
+    function viewFeedback() {
+        const feedbackKey = 'np_feedback_list';
+        let feedbackList = [];
+        
+        try {
+            const existing = localStorage.getItem(feedbackKey);
+            if (existing) feedbackList = JSON.parse(existing);
+        } catch (e) {
+            console.error('Error reading feedback:', e);
+        }
+        
+        const feedbackListDiv = document.getElementById('feedback-list');
+        
+        if (feedbackList.length === 0) {
+            feedbackListDiv.innerHTML = '<div style="text-align:center; color:#888; padding:40px; font-size:13px;">No feedback yet. Be the first to share!</div>';
+        } else {
+            // Sort by date, newest first
+            feedbackList.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            let html = '';
+            feedbackList.forEach(item => {
+                const date = new Date(item.date);
+                const dateStr = date.toLocaleDateString('en-SG', { month: 'short', day: 'numeric', year: 'numeric' });
+                
+                html += `
+                    <div style="background:rgba(0,0,0,0.3); border-radius:12px; padding:15px; margin-bottom:12px; border-left:3px solid var(--np-orange);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-weight:800; color:var(--np-orange); font-size:13px;">${item.user}</span>
+                            <span style="font-size:10px; color:#999;">${dateStr}</span>
+                        </div>
+                        <p style="margin:0; font-size:12px; color:#ddd; line-height:1.5;">${item.text}</p>
+                    </div>
+                `;
+            });
+            
+            feedbackListDiv.innerHTML = html;
+        }
+        
+        navigate('screen-feedback');
+    }
+    window.equipCosmetic = equipCosmetic;
+
+</script> 
 </body>
 </html>
